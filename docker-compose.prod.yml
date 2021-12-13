@@ -1,0 +1,11 @@
+# docker-compose.prod.yml
+
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    ports:
+      - 8000:80
