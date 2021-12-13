@@ -30,7 +30,7 @@ def read_speeches():
 @app.post("/speeches/")
 def create_speeches(speech: Speeches):
     with Session(engine) as session:
-        session.add(event)
+        session.add(speech)
         session.commit()
         session.refresh(speech)
         return speech
