@@ -18,14 +18,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.get("/", include_in_schema=False)
 def docs_redirect():
     return RedirectResponse(url="/docs")
+
 
 @app.get("/speeches/")
 def read_speeches():
     with Session(engine) as session:
         return session.exec(select(Speeches)).all()
+
 
 @app.post("/speeches/")
 def create_speeches(speech: Speeches):

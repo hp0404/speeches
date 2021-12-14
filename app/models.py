@@ -23,8 +23,7 @@ class SchemaBase(SQLModel):
         default_factory=custom_uuid,
     )
     created_at: datetime.datetime = Field(
-        default_factory=datetime.datetime.utcnow, 
-        index=False
+        default_factory=datetime.datetime.utcnow, index=False
     )
 
 
@@ -33,4 +32,4 @@ class Speeches(SchemaBase, table=True):
     text: str = Field(index=False)
     date: datetime.date = Field(index=False)
     URL: HttpUrl = Field(index=False)
-    category: Optional[str] = Field(default=None, index=False) 
+    category: Optional[str] = Field(default=None, index=False)
