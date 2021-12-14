@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import uuid
+import datetime
 from typing import Optional
-from datetime import datetime, date
 
 from pydantic import HttpUrl
 from sqlmodel import Field, SQLModel
@@ -22,12 +22,15 @@ class SchemaBase(SQLModel):
         nullable=False,
         default_factory=custom_uuid,
     )
-    created_at: datetime = Field(default_factory=datetime.utcnow, index=False)
+    created_at: datetime.datetime = Field(
+        default_factory=datetime.datetime.utcnow, 
+        index=False
+    )
 
 
 class Speeches(SchemaBase, table=True):
-    title: str
-    text: str
-    date: date
-    URL: HttpUrl
-    category: Optional[str] = Field(default=None) 
+    title: str = Field(index=False)
+    text: str = Field(index=False)
+    date: datetime.date = Field(index=False)
+    URL: HttpUrl = Field(index=False)
+    category: Optional[str] = Field(default=None, index=False) 
