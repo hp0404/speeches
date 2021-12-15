@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from fastapi import FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException
+from fastapi.security import OAuth2PasswordBearer
 from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import Session, select
 from starlette import status
@@ -9,7 +10,7 @@ from app.models import Speeches
 from app.database import engine
 from app.core.config import settings
 
-
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 app = FastAPI(title=settings.PROJECT_NAME)
 app.add_middleware(
     CORSMiddleware,
@@ -18,6 +19,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+def auth_request(token: str = Depends(oauth2_scheme)) -> bool:
+    """Using a single secret token to auth one single user.
+    This has be to updated once/if we need more users; but
+    the rest of the code would work without changes."""
+    return token == settings.SECRET_TOKEN
 
 
 @app.get("/", include_in_schema=False)
@@ -32,11 +40,12 @@ def read_speeches():
 
 
 @app.post("/speeches/")
-def create_speeches(speech: Speeches, token: str):
-    """The simplest auth option: token as a query param."""
-    if token != settings.SECRET_TOKEN:
+def create_speeches(speech: Speeches, authenticated: bool = Depends(auth_request)):
+    if not authenticated:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated"
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authentication credentials",
+            headers={"WWW-Authenticate": "Bearer"},
         )
     with Session(engine) as session:
         session.add(speech)
