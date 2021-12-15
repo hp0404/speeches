@@ -5,6 +5,7 @@ from pydantic import AnyHttpUrl, BaseSettings, PostgresDsn, validator
 
 class Settings(BaseSettings):
     PROJECT_NAME: str
+    SECRET_TOKEN: str
     BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
 
     @validator("BACKEND_CORS_ORIGINS", pre=True)
