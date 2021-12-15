@@ -25,7 +25,14 @@ def auth_request(token: str = Depends(oauth2_scheme)) -> bool:
     """Using a single secret token to auth one single user.
     This has be to updated once/if we need more users; but
     the rest of the code would work without changes."""
-    return token == settings.SECRET_TOKEN
+    authenticated = token == settings.SECRET_TOKEN
+    if not authenticated:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authentication credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    return authenticated
 
 
 @app.get("/", include_in_schema=False)
@@ -34,19 +41,15 @@ def docs_redirect():
 
 
 @app.get("/speeches/")
-def read_speeches():
+def read_speeches(offset: int = 0, limit: int = 5, auth: bool = Depends(auth_request)):
     with Session(engine) as session:
-        return session.exec(select(Speeches)).all()
+        statement = select(Speeches).offset(offset).limit(limit)
+        speeches = session.exec(statement).all()
+        return speeches
 
 
 @app.post("/speeches/")
-def create_speeches(speech: Speeches, authenticated: bool = Depends(auth_request)):
-    if not authenticated:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authentication credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+def create_speeches(speech: Speeches, auth: bool = Depends(auth_request)):
     with Session(engine) as session:
         session.add(speech)
         session.commit()
