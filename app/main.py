@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import Session, select
+from starlette import status
 from starlette.responses import RedirectResponse
 
 from app.models import Speeches
@@ -31,7 +32,12 @@ def read_speeches():
 
 
 @app.post("/speeches/")
-def create_speeches(speech: Speeches):
+def create_speeches(speech: Speeches, token: str):
+    """The simplest auth option: token as a query param."""
+    if token != settings.SECRET_TOKEN:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated"
+        )
     with Session(engine) as session:
         session.add(speech)
         session.commit()
