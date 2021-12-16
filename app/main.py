@@ -31,7 +31,7 @@ def read_speeches(offset: int = 0, limit: int = 5, auth: bool = Depends(auth_req
     with Session(engine) as session:
         statement = (
             select(Speeches)
-            .order_by(Speeches.created_at.desc())
+            .order_by(Speeches.date.desc(), Speeches.created_at)
             .offset(offset)
             .limit(limit)
         )
