@@ -7,7 +7,7 @@ from sqlmodel import Session, select
 from starlette.responses import RedirectResponse
 
 from app.auth import auth_request
-from app.models import Input, Extra, Texts
+from app.models import Input, Metadata, Texts
 from app.database import engine
 from app.core.config import settings
 
@@ -30,8 +30,8 @@ def docs_redirect():
 def read_speeches(offset: int = 0, limit: int = 5, auth: bool = Depends(auth_request)):
     with Session(engine) as session:
         statement = (
-            select(Extra)
-            .order_by(Extra.date.desc(), Extra.created_at)
+            select(Metadata)
+            .order_by(Metadata.date.desc(), Metadata.created_at)
             .offset(offset)
             .limit(limit)
         )
@@ -42,14 +42,14 @@ def read_speeches(offset: int = 0, limit: int = 5, auth: bool = Depends(auth_req
 @app.post("/speeches/")
 def create_speeches(payload: Input, auth: bool = Depends(auth_request)):
     with Session(engine) as session:
-        metadata = Extra(
+        metadata = Metadata(
             title=payload.title,
             date=payload.date,
             URL=payload.URL,
             category=payload.category
         )
         texts = Texts(
-            text_id=metadata.id,
+            id=metadata.id,
             text=payload.text
         )
         session.add(metadata)

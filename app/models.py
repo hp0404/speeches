@@ -23,7 +23,7 @@ class Input(SQLModel):
     category: Optional[str] = Field(default=None, index=False)
 
 
-class Extra(SQLModel, table=True):
+class Metadata(SQLModel, table=True):
     id: uuid.UUID = Field(
         primary_key=True,
         index=True,
@@ -40,11 +40,11 @@ class Extra(SQLModel, table=True):
 
 
 class Texts(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    text_id: Optional[uuid.UUID] = Field(
-        default=None,
+    id: Optional[uuid.UUID] = Field(
+        primary_key=True,
+        index=True,
         nullable=False,
-        index=False,
-        foreign_key="extra.id"
+        default=None,
+        foreign_key="metadata.id"
     )
     text: str = Field(index=False)
