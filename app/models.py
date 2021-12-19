@@ -15,7 +15,15 @@ def custom_uuid() -> uuid.UUID:
     return val
 
 
-class SchemaBase(SQLModel):
+class Input(SQLModel):
+    title: str = Field(index=False)
+    text: str = Field(index=False)
+    date: datetime.date = Field(index=False)
+    URL: HttpUrl = Field(index=False)
+    category: Optional[str] = Field(default=None, index=False)
+
+
+class Extra(SQLModel, table=True):
     id: uuid.UUID = Field(
         primary_key=True,
         index=True,
@@ -25,11 +33,18 @@ class SchemaBase(SQLModel):
     created_at: datetime.datetime = Field(
         default_factory=datetime.datetime.utcnow, index=False
     )
-
-
-class Speeches(SchemaBase, table=True):
     title: str = Field(index=False)
-    text: str = Field(index=False)
     date: datetime.date = Field(index=False)
     URL: HttpUrl = Field(index=False)
     category: Optional[str] = Field(default=None, index=False)
+
+
+class Texts(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    text_id: Optional[uuid.UUID] = Field(
+        default=None,
+        nullable=False,
+        index=False,
+        foreign_key="extra.id"
+    )
+    text: str = Field(index=False)
