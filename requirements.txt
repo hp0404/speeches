@@ -2,5 +2,5 @@ alembic==1.7.5
 fastapi==0.70.1
 sqlmodel==0.0.5
 uvicorn==0.16.0
-psycopg2-binary==2.9.2
+psycopg2-binary==2.9.3
 python-dotenv==0.19.2
