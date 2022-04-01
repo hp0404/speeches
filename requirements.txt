@@ -1,5 +1,5 @@
 alembic==1.7.5
-fastapi==0.70.1
+fastapi==0.75.0
 sqlmodel==0.0.5
 uvicorn==0.16.0
 psycopg2-binary==2.9.2
