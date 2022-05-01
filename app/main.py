@@ -26,7 +26,9 @@ def docs_redirect():
 
 
 @app.get("/speeches/")
-def read_speeches(offset: int = 0, limit: int = 5, auth: bool = Depends(auth_request)):
+def read_speeches(
+    offset: int = 0, limit: int = 5, auth: bool = Depends(auth_request)
+):
     with Session(engine) as session:
         statement = (
             select(Metadata)
@@ -53,9 +55,9 @@ def create_speeches(payload: Input, auth: bool = Depends(auth_request)):
         session.commit()
         session.refresh(metadata)
         session.refresh(texts)
-        for feature in feature_extractor.stream(
-            data=[(payload.text, metadata.id)], batch_size=1
-        ):
+
+        data_tuples = [(payload.text, metadata.id)]
+        for feature in feature_extractor.stream(data=data_tuples, batch=1):
             found_features = Features(**feature)
             session.add(found_features)
         session.commit()

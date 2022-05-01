@@ -10,7 +10,9 @@ from sqlalchemy.dialects import postgresql
 
 
 def custom_uuid() -> uuid.UUID:
-    # Note: Work around UUIDs with leading zeros: https://github.com/tiangolo/sqlmodel/issues/25
+    """Generate UUID without leading zeros."""
+    # Note: Work around UUIDs with leading zeros:
+    # https://github.com/tiangolo/sqlmodel/issues/25
     val = uuid.uuid4()
     while val.hex[0] == "0":
         val = uuid.uuid4()
@@ -53,7 +55,11 @@ class Texts(SQLModel, table=True):
 
 
 class Features(SQLModel, table=True):
-    feature_id: typing.Optional[int] = Field(default=None, primary_key=True, index=True)
+    feature_id: typing.Optional[int] = Field(
+        default=None,
+        primary_key=True,
+        index=True
+    )
     document_id: typing.Optional[uuid.UUID] = Field(
         nullable=False,
         default=None,
@@ -66,4 +72,6 @@ class Features(SQLModel, table=True):
 
     # array workaround
     # https://github.com/tiangolo/sqlmodel/issues/178#issuecomment-1044569342
-    location: typing.List[int] = Field(sa_column=Column(postgresql.ARRAY(Integer())))
+    location: typing.List[int] = Field(
+        sa_column=Column(postgresql.ARRAY(Integer()))
+    )

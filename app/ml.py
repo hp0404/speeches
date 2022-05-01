@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 import json
+from uuid import UUID
 from pathlib import Path
 from typing import Any, Dict, List, Union, Iterator, Tuple, NamedTuple
 
 import spacy
 
-Data = Dict[str, str]
-Feature = Dict[str, Union[str, Tuple[int, int]]]
+DataTuple = List[Tuple[str, UUID]]
+Feature = Dict[str, Union[str, UUID, Tuple[int, int]]]
 
 
 class Rule(NamedTuple):
@@ -48,7 +49,7 @@ class ML:
         return matcher
 
     def _stream_named_entities(
-        self, doc: spacy.tokens.doc.Doc, uuid: str
+        self, doc: spacy.tokens.doc.Doc, uuid: UUID
     ) -> Iterator[Feature]:
         """Streams named entities."""
         for entity in doc.ents:
@@ -62,7 +63,7 @@ class ML:
             }
 
     def _stream_noun_phrases(
-        self, doc: spacy.tokens.doc.Doc, uuid: str
+        self, doc: spacy.tokens.doc.Doc, uuid: UUID
     ) -> Iterator[Feature]:
         """Streams noun phrases."""
         for match_id, start, end in self.phrase_matcher(doc):
@@ -76,13 +77,15 @@ class ML:
                 "location": (span.start_char, span.end_char),
             }
 
-    def stream(self, data: Data, batch_size: int = 25) -> Iterator[Feature]:
-        for doc, uuid in self.nlp.pipe(data, as_tuples=True, batch_size=batch_size):  # type: ignore
+    def stream(self, data: DataTuple, batch: int = 25) -> Iterator[Feature]:
+        """Streams extracted features."""
+        for doc, uuid in self.nlp.pipe(data, as_tuples=True, batch_size=batch):
             yield from self._stream_named_entities(doc, uuid)
             yield from self._stream_noun_phrases(doc, uuid)
 
 
 def create_pipeline() -> ML:
+    """Initializes ML pipeline."""
     nlp = spacy.load("ru_core_news_sm")
     patterns = Path(__file__).resolve().parent.parent / "assets" / "patterns"
     return ML(nlp, patterns=patterns)
