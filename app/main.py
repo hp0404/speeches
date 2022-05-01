@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
-from typing import List
-
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import Session, select
 from starlette.responses import RedirectResponse
 
+from app.ml import feature_extractor
 from app.auth import auth_request
-from app.models import Speeches
+from app.models import Input, Metadata, Texts, Features
 from app.database import engine
 from app.core.config import settings
 
@@ -26,12 +25,14 @@ def docs_redirect():
     return RedirectResponse(url="/docs")
 
 
-@app.get("/speeches/", response_model=List[Speeches])
-def read_speeches(offset: int = 0, limit: int = 5, auth: bool = Depends(auth_request)):
+@app.get("/speeches/")
+def read_speeches(
+    offset: int = 0, limit: int = 5, auth: bool = Depends(auth_request)
+):
     with Session(engine) as session:
         statement = (
-            select(Speeches)
-            .order_by(Speeches.date.desc(), Speeches.created_at)
+            select(Metadata)
+            .order_by(Metadata.date.desc(), Metadata.created_at)
             .offset(offset)
             .limit(limit)
         )
@@ -39,10 +40,25 @@ def read_speeches(offset: int = 0, limit: int = 5, auth: bool = Depends(auth_req
         return speeches
 
 
-@app.post("/speeches/", response_model=Speeches)
-def create_speeches(speech: Speeches, auth: bool = Depends(auth_request)):
+@app.post("/speeches/")
+def create_speeches(payload: Input, auth: bool = Depends(auth_request)):
     with Session(engine) as session:
-        session.add(speech)
+        metadata = Metadata(
+            title=payload.title,
+            date=payload.date,
+            URL=payload.URL,
+            category=payload.category,
+        )
+        texts = Texts(id=metadata.id, text=payload.text)
+        session.add(metadata)
+        session.add(texts)
         session.commit()
-        session.refresh(speech)
-        return speech
+        session.refresh(metadata)
+        session.refresh(texts)
+
+        data_tuples = [(payload.text, metadata.id)]
+        for feature in feature_extractor.stream(data=data_tuples, batch=1):
+            found_features = Features(**feature)
+            session.add(found_features)
+        session.commit()
+        return payload
