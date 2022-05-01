@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 import uuid
+import typing
 import datetime
-from typing import Optional
 
 from pydantic import HttpUrl
 from sqlmodel import Field, SQLModel
+from sqlalchemy import Column, Integer
+from sqlalchemy.dialects import postgresql
 
 
 def custom_uuid() -> uuid.UUID:
@@ -16,11 +18,11 @@ def custom_uuid() -> uuid.UUID:
 
 
 class Input(SQLModel):
-    title: str = Field(index=False)
-    text: str = Field(index=False)
-    date: datetime.date = Field(index=False)
-    URL: HttpUrl = Field(index=False)
-    category: Optional[str] = Field(default=None, index=False)
+    title: str
+    text: str
+    date: datetime.date
+    URL: HttpUrl
+    category: typing.Optional[str] = Field(default=None)
 
 
 class Metadata(SQLModel, table=True):
@@ -33,18 +35,35 @@ class Metadata(SQLModel, table=True):
     created_at: datetime.datetime = Field(
         default_factory=datetime.datetime.utcnow, index=False
     )
-    title: str = Field(index=False)
-    date: datetime.date = Field(index=False)
-    URL: HttpUrl = Field(index=False)
-    category: Optional[str] = Field(default=None, index=False)
+    title: str
+    date: datetime.date
+    URL: HttpUrl
+    category: typing.Optional[str] = Field(default=None)
 
 
 class Texts(SQLModel, table=True):
-    id: Optional[uuid.UUID] = Field(
+    id: typing.Optional[uuid.UUID] = Field(
         primary_key=True,
         index=True,
         nullable=False,
         default=None,
-        foreign_key="metadata.id"
+        foreign_key="metadata.id",
     )
     text: str = Field(index=False)
+
+
+class Features(SQLModel, table=True):
+    feature_id: typing.Optional[int] = Field(default=None, primary_key=True, index=True)
+    document_id: typing.Optional[uuid.UUID] = Field(
+        nullable=False,
+        default=None,
+        foreign_key="metadata.id",
+    )
+    feature_type: str
+    feature_label: str
+    match: str
+    match_normalized: str
+
+    # array workaround
+    # https://github.com/tiangolo/sqlmodel/issues/178#issuecomment-1044569342
+    location: typing.List[int] = Field(sa_column=Column(postgresql.ARRAY(Integer())))
