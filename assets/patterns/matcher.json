@@ -1,0 +1,48 @@
+{
+    "patterns": [
+        {
+            "label": "ADJ-NOUN",
+            "pattern": [
+                [{"POS": "ADJ"}, {"POS": {"IN": ["NOUN", "PROPN"]}}]
+            ]
+        },
+        {
+            "label": "ADJ-ADJ-NOUN",
+            "pattern": [
+                [{"POS": "ADJ"}, {"POS": "ADJ"}, {"POS": {"IN": ["NOUN", "PROPN"]}}]
+            ]
+        },
+        {
+            "label": "NOUN-NOUN",
+            "pattern": [
+                [{"POS": {"IN": ["NOUN", "PROPN"]}}, {"POS": {"IN": ["NOUN", "PROPN"]}}]
+            ]
+        },
+        {
+            "label": "NOUN-NOUN-NOUN",
+            "pattern": [
+                [
+                    {"POS": {"IN": ["NOUN", "PROPN"]}}, 
+                    {"POS": {"IN": ["NOUN", "PROPN"]}}, 
+                    {"POS": {"IN": ["NOUN", "PROPN"]}}
+                ]
+            ]
+        },
+        {
+            "label": "ADJ-NOUN-NOUN",
+            "pattern": [
+                [
+                    {"POS": "ADJ"}, 
+                    {"POS": {"IN": ["NOUN", "PROPN"]}},
+                    {"POS": {"IN": ["NOUN", "PROPN"]}}
+                ]
+            ]
+        },
+        {
+            "label": "VERB-ADJ-NOUN",
+            "pattern": [
+                [{"POS": "VERB"}, {"POS": "ADJ"}, {"POS": {"IN": ["NOUN", "PROPN"]}}]
+            ]
+        }
+    ]
+}
