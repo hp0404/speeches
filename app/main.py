@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
-from typing import List
-
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import Session, select
 from starlette.responses import RedirectResponse
 
+from app.ml import feature_extractor
 from app.auth import auth_request
-from app.models import Input, Metadata, Texts
+from app.models import Input, Metadata, Texts, Features
 from app.database import engine
 from app.core.config import settings
 
@@ -46,15 +45,18 @@ def create_speeches(payload: Input, auth: bool = Depends(auth_request)):
             title=payload.title,
             date=payload.date,
             URL=payload.URL,
-            category=payload.category
+            category=payload.category,
         )
-        texts = Texts(
-            id=metadata.id,
-            text=payload.text
-        )
+        texts = Texts(id=metadata.id, text=payload.text)
         session.add(metadata)
         session.add(texts)
         session.commit()
         session.refresh(metadata)
         session.refresh(texts)
+        for feature in feature_extractor.stream(
+            data=[(payload.text, metadata.id)], batch_size=1
+        ):
+            found_features = Features(**feature)
+            session.add(found_features)
+        session.commit()
         return payload
