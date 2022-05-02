@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Union, Iterator, Tuple, NamedTuple
 import spacy
 
 DataTuple = List[Tuple[str, UUID]]
-Feature = Dict[str, Union[str, UUID, Tuple[int, int]]]
+Feature = Dict[str, Union[str, UUID, List[int]]]
 
 
 class Rule(NamedTuple):
@@ -59,7 +59,7 @@ class ML:
                 "feature_label": entity.label_,
                 "match": entity.text,
                 "match_normalized": entity.lemma_,
-                "location": (entity.start_char, entity.end_char),
+                "location": [entity.start_char, entity.end_char],
             }
 
     def _stream_noun_phrases(
@@ -74,7 +74,7 @@ class ML:
                 "feature_label": self.nlp.vocab[match_id].text,
                 "match": span.text,
                 "match_normalized": span.lemma_,
-                "location": (span.start_char, span.end_char),
+                "location": [span.start_char, span.end_char],
             }
 
     def stream(self, data: DataTuple, batch: int = 25) -> Iterator[Feature]:
