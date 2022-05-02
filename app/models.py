@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import enum
 import uuid
 import typing
 import datetime
@@ -19,7 +20,7 @@ def custom_uuid() -> uuid.UUID:
     return val
 
 
-class Input(SQLModel):
+class ParsedText(SQLModel):
     title: str
     text: str
     date: datetime.date
@@ -75,3 +76,36 @@ class Features(SQLModel, table=True):
     location: typing.List[int] = Field(
         sa_column=Column(postgresql.ARRAY(Integer()))
     )
+
+
+class FeatureTypes(str, enum.Enum):
+    NE = "NE"
+    NP = "NP"
+
+
+class FeaturePayload(SQLModel):
+    text: str
+
+
+class _FeatureResponse(SQLModel):
+    feature_id: int
+    document_id: uuid.UUID
+    feature_type: FeatureTypes
+    feature_label: str
+    match: str
+    match_normalized: str
+    location: typing.List[int]
+
+class FeatureResponse(SQLModel):
+    successful: bool
+    features: typing.List[_FeatureResponse]
+
+
+class SpeechesResponse(SQLModel):
+    id: uuid.UUID
+    title: str
+    text: str
+    date: datetime.date
+    created_at: datetime.datetime
+    URL: HttpUrl
+    features: typing.Optional[typing.List[_FeatureResponse]] = None
