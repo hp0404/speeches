@@ -8,13 +8,13 @@ from sqlmodel import Session, select
 
 from app.ml import feature_extractor
 from app.auth import auth_request
-from app.models import ParsedText, Metadata, Texts, Features, SpeechesRespose
+from app.models import ParsedText, Metadata, Texts, Features, SpeechesResponse
 from app.database import get_session
 
 router = APIRouter(prefix="/speeches", tags=["speeches"])
 
 
-@router.get("/", include_in_schema=False)
+@router.get("/", include_in_schema=False, response_model=typing.List[Metadata])
 def read_speeches(
     offset: int = 0,
     limit: int = 5,
@@ -30,7 +30,7 @@ def read_speeches(
     return session.exec(query).all()
 
 
-@router.post("/", include_in_schema=False)
+@router.post("/", include_in_schema=False, response_model=typing.Dict[str, bool])
 def create_speeches(
     payload: ParsedText,
     session: Session = Depends(get_session),
@@ -57,20 +57,20 @@ def create_speeches(
     return {"ok": True}
 
 
-@router.get("/{id}", response_model=SpeechesRespose)
+@router.get("/{id}", response_model=SpeechesResponse)
 def read_speech_by_id(
     id: uuid.UUID,
     include_features: bool = False,
     session: Session = Depends(get_session),
     auth: bool = Depends(auth_request),
-):
+) -> SpeechesResponse:
     if not include_features:
         doc = select(Metadata, Texts).join(Texts).where(Metadata.id == id)
         result = session.exec(doc).all()
         if not result:
             raise HTTPException(status_code=404, detail="Document not found")
         for metadata, texts in result:
-            return SpeechesRespose(
+            return SpeechesResponse(
                 id=metadata.id,
                 title=metadata.title,
                 text=texts.text,
@@ -100,4 +100,4 @@ def read_speech_by_id(
             storage["created_at"] = metadata.created_at
             storage["URL"] = metadata.URL
         storage["features"].append(features)
-    return SpeechesRespose(**storage)
+    return SpeechesResponse(**storage)

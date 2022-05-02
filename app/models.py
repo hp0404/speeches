@@ -101,7 +101,7 @@ class FeatureResponse(SQLModel):
     features: typing.List[_FeatureResponse]
 
 
-class SpeechesRespose(SQLModel):
+class SpeechesResponse(SQLModel):
     id: uuid.UUID
     title: str
     text: str
