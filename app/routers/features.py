@@ -6,7 +6,6 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
 from app.ml import feature_extractor
-from app.auth import auth_request
 from app.models import custom_uuid
 from app.models import Features, FeatureTypes, FeaturePayload, FeatureResponse
 from app.database import get_session
@@ -15,10 +14,7 @@ router = APIRouter(prefix="/features", tags=["features"])
 
 
 @router.post("/", response_model=FeatureResponse)
-def extract_features_from_text(
-    data: FeaturePayload,
-    auth: bool = Depends(auth_request),
-) -> FeatureResponse:
+def extract_features_from_text(data: FeaturePayload) -> FeatureResponse:
     """Runs feature extraction pipeline without writing to the database."""
     features = []
     data_stream = [(data.text, custom_uuid())]
@@ -37,7 +33,6 @@ def read_features_by_document(
     offset: int = 0,
     limit: int = 25,
     session: Session = Depends(get_session),
-    auth: bool = Depends(auth_request),
 ) -> typing.List[Features]:
     """Reads features of a given document."""
     doc = select(Features).where(Features.document_id == document_id)

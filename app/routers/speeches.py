@@ -7,7 +7,6 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
 from app.ml import feature_extractor
-from app.auth import auth_request
 from app.models import ParsedText, Metadata, Texts, Features, SpeechesResponse
 from app.database import get_session
 
@@ -19,7 +18,6 @@ def read_speeches(
     offset: int = 0,
     limit: int = 5,
     session: Session = Depends(get_session),
-    auth: bool = Depends(auth_request),
 ) -> typing.List[Metadata]:
     query = (
         select(Metadata)
@@ -34,7 +32,6 @@ def read_speeches(
 def create_speeches(
     payload: ParsedText,
     session: Session = Depends(get_session),
-    auth: bool = Depends(auth_request),
 ) -> typing.Dict[str, bool]:
     metadata = Metadata(
         title=payload.title,
@@ -62,7 +59,6 @@ def read_speech_by_id(
     id: uuid.UUID,
     include_features: bool = False,
     session: Session = Depends(get_session),
-    auth: bool = Depends(auth_request),
 ) -> SpeechesResponse:
     if not include_features:
         doc = select(Metadata, Texts).join(Texts).where(Metadata.id == id)
