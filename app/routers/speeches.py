@@ -2,10 +2,9 @@
 """This module contains /speeches/ router."""
 import uuid
 import typing
-import collections
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlmodel import Session, select
+from sqlmodel import Session, desc, select
 
 from app.ml import feature_extractor
 from app.models import ParsedText, Metadata, Texts, Features, SpeechesResponse
@@ -23,7 +22,7 @@ def read_speeches(
     """Queries the latest entries of the metadata table."""
     query = (
         select(Metadata)
-        .order_by(Metadata.date.desc(), Metadata.created_at)
+        .order_by(desc(Metadata.date), Metadata.created_at)
         .offset(offset)
         .limit(limit)
     )
@@ -68,40 +67,27 @@ def read_speech_by_id(
     session: Session = Depends(get_session),
 ) -> SpeechesResponse:
     """Reads speeches."""
-    if not include_features:
-        doc = select(Metadata, Texts).join(Texts).where(Metadata.id == id)
-        result = session.exec(doc).all()
-        if not result:
-            raise HTTPException(status_code=404, detail="Document not found")
-        for metadata, texts in result:
-            return SpeechesResponse(
-                id=metadata.id,
-                title=metadata.title,
-                text=texts.text,
-                date=metadata.date,
-                created_at=metadata.created_at,
-                URL=metadata.URL,
-                features=None,
-            )
-    doc = (
-        select(Metadata, Texts, Features)
-        .join(Texts)
-        .join(Features, Metadata.id == Features.document_id)
-        .where(Metadata.id == id)
-    )
-    result = session.exec(doc).all()
-    if not result:
+
+    metadata = session.get(Metadata, id)
+    if not metadata:
         raise HTTPException(status_code=404, detail="Document not found")
 
-    seen: typing.Set[uuid.UUID] = set()
-    storage: typing.Dict[str, typing.Any] = collections.defaultdict(list)
-    for metadata, texts, features in result:
-        if metadata.id not in seen:
-            storage["id"] = metadata.id
-            storage["title"] = metadata.title
-            storage["text"] = texts.text
-            storage["date"] = metadata.date
-            storage["created_at"] = metadata.created_at
-            storage["URL"] = metadata.URL
-        storage["features"].append(features)
-    return SpeechesResponse(**storage)
+    texts = session.get(Texts, id)
+    assert texts is not None, "Text not found, something went wrong."
+
+    if include_features:
+        features = session.exec(
+            select(Features).where(Features.document_id == id)
+        ).all()
+    else:
+        features = None
+
+    return SpeechesResponse(
+        id=metadata.id,
+        title=metadata.title,
+        text=texts.text,
+        date=metadata.date,
+        created_at=metadata.created_at,
+        URL=metadata.URL,
+        features=features,
+    )
