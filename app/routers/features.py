@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""This module contains /features/ router."""
 import uuid
 import typing
 
@@ -6,7 +7,6 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
 from app.ml import feature_extractor
-from app.auth import auth_request
 from app.models import custom_uuid
 from app.models import Features, FeatureTypes, FeaturePayload, FeatureResponse
 from app.database import get_session
@@ -15,15 +15,12 @@ router = APIRouter(prefix="/features", tags=["features"])
 
 
 @router.post("/", response_model=FeatureResponse)
-def extract_features_from_text(
-    data: FeaturePayload,
-    auth: bool = Depends(auth_request),
-) -> FeatureResponse:
+def extract_features_from_text(data: FeaturePayload) -> FeatureResponse:
     """Runs feature extraction pipeline without writing to the database."""
     features = []
     data_stream = [(data.text, custom_uuid())]
     for fid, feature in enumerate(feature_extractor.stream(data_stream), start=1):
-        feature["feature_id"] = fid
+        feature["feature_id"] = str(fid)
         features.append(feature)
     if not features:
         raise HTTPException(status_code=404, detail="Features not found")
@@ -37,7 +34,6 @@ def read_features_by_document(
     offset: int = 0,
     limit: int = 25,
     session: Session = Depends(get_session),
-    auth: bool = Depends(auth_request),
 ) -> typing.List[Features]:
     """Reads features of a given document."""
     doc = select(Features).where(Features.document_id == document_id)

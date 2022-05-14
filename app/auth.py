@@ -1,4 +1,10 @@
 # -*- coding: utf-8 -*-
+"""This module contains auth_request dependency.
+
+We assume the access would be limited to HCSS users, thus the security worflow
+is simplified to checking if provided token matches the secret value stored in
+.env file.
+"""
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from starlette import status
@@ -9,9 +15,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 def auth_request(token: str = Depends(oauth2_scheme)) -> bool:
-    """Using a single secret token to auth one single user.
-    This has be to updated once/if we need more users; but
-    the rest of the code would work without changes."""
+    """Verifies token against secret token stored in .env."""
     authenticated = token == settings.SECRET_TOKEN
     if not authenticated:
         raise HTTPException(

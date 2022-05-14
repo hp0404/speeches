@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""This module contains database engine & session generator."""
 import typing
 
 from sqlmodel import Session, create_engine
