@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""This module contains main FastAPI instance & adds tags metadata."""
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import RedirectResponse
@@ -31,11 +32,14 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+# adding router dependencies separately to keep /docs accessible
+# otherwise would've set app-level dependecy
 app.include_router(speeches.router, dependencies=[Depends(auth_request)])
 app.include_router(features.router, dependencies=[Depends(auth_request)])
 app.include_router(notifications.router, dependencies=[Depends(auth_request)])
 
 
 @app.get("/", include_in_schema=False)
-def docs_redirect():
+def docs_redirect() -> RedirectResponse:
+    """Default redirect."""
     return RedirectResponse(url="/docs")

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""This module contains /features/ router."""
 import uuid
 import typing
 
@@ -19,7 +20,7 @@ def extract_features_from_text(data: FeaturePayload) -> FeatureResponse:
     features = []
     data_stream = [(data.text, custom_uuid())]
     for fid, feature in enumerate(feature_extractor.stream(data_stream), start=1):
-        feature["feature_id"] = fid
+        feature["feature_id"] = str(fid)
         features.append(feature)
     if not features:
         raise HTTPException(status_code=404, detail="Features not found")

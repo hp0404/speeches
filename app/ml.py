@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""This module contains ML-related utilities."""
 import json
 from uuid import UUID
 from pathlib import Path
@@ -11,6 +12,8 @@ Feature = Dict[str, Union[str, UUID, List[int]]]
 
 
 class Rule(NamedTuple):
+    """Patterns structure."""
+
     label: str
     pattern: List[List[Dict[str, Any]]]
 
@@ -48,8 +51,10 @@ class ML:
             )
         return matcher
 
-    def _stream_named_entities(
-        self, doc: spacy.tokens.doc.Doc, uuid: UUID
+    def _stream_named_entities(  # pylint: disable=no-self-use
+        self,
+        doc: spacy.tokens.doc.Doc,  # pylint: disable=c-extension-no-member
+        uuid: UUID,
     ) -> Iterator[Feature]:
         """Streams named entities."""
         for entity in doc.ents:
@@ -63,7 +68,9 @@ class ML:
             }
 
     def _stream_noun_phrases(
-        self, doc: spacy.tokens.doc.Doc, uuid: UUID
+        self,
+        doc: spacy.tokens.doc.Doc,  # pylint: disable=c-extension-no-member
+        uuid: UUID,
     ) -> Iterator[Feature]:
         """Streams noun phrases."""
         for match_id, start, end in self.phrase_matcher(doc):

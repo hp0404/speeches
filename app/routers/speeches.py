@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""This module contains /speeches/ router."""
 import uuid
 import typing
 import collections
@@ -19,6 +20,7 @@ def read_speeches(
     limit: int = 5,
     session: Session = Depends(get_session),
 ) -> typing.List[Metadata]:
+    """Queries the latest entries of the metadata table."""
     query = (
         select(Metadata)
         .order_by(Metadata.date.desc(), Metadata.created_at)
@@ -33,6 +35,11 @@ def create_speeches(
     payload: ParsedText,
     session: Session = Depends(get_session),
 ) -> typing.Dict[str, bool]:
+    """Creates speeches.
+
+    It does so by moving payload fields to corresponding tables and
+    calling the ML worflow. This is a hidden endpoint that is only
+    exposed to the cronjob."""
     metadata = Metadata(
         title=payload.title,
         date=payload.date,
@@ -56,10 +63,11 @@ def create_speeches(
 
 @router.get("/{id}", response_model=SpeechesResponse)
 def read_speech_by_id(
-    id: uuid.UUID,
+    id: uuid.UUID,  # pylint: disable=redefined-builtin,invalid-name
     include_features: bool = False,
     session: Session = Depends(get_session),
 ) -> SpeechesResponse:
+    """Reads speeches."""
     if not include_features:
         doc = select(Metadata, Texts).join(Texts).where(Metadata.id == id)
         result = session.exec(doc).all()
@@ -85,8 +93,8 @@ def read_speech_by_id(
     if not result:
         raise HTTPException(status_code=404, detail="Document not found")
 
-    seen = set()
-    storage = collections.defaultdict(list)
+    seen: typing.Set[uuid.UUID] = set()
+    storage: typing.Dict[str, typing.Any] = collections.defaultdict(list)
     for metadata, texts, features in result:
         if metadata.id not in seen:
             storage["id"] = metadata.id

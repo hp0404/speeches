@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""This module contains SQLModel's models."""
 import enum
 import uuid
 import typing
@@ -21,6 +22,8 @@ def custom_uuid() -> uuid.UUID:
 
 
 class ParsedText(SQLModel):
+    """Input fields that POST /speeches/ endpoint expects."""
+
     title: str
     text: str
     date: datetime.date
@@ -29,6 +32,8 @@ class ParsedText(SQLModel):
 
 
 class Metadata(SQLModel, table=True):
+    """public.metadata schema."""
+
     id: uuid.UUID = Field(
         primary_key=True,
         index=True,
@@ -45,6 +50,8 @@ class Metadata(SQLModel, table=True):
 
 
 class Texts(SQLModel, table=True):
+    """public.texts schema."""
+
     id: typing.Optional[uuid.UUID] = Field(
         primary_key=True,
         index=True,
@@ -56,11 +63,9 @@ class Texts(SQLModel, table=True):
 
 
 class Features(SQLModel, table=True):
-    feature_id: typing.Optional[int] = Field(
-        default=None,
-        primary_key=True,
-        index=True
-    )
+    """public.features schema."""
+
+    feature_id: typing.Optional[int] = Field(default=None, primary_key=True, index=True)
     document_id: typing.Optional[uuid.UUID] = Field(
         nullable=False,
         default=None,
@@ -73,21 +78,25 @@ class Features(SQLModel, table=True):
 
     # array workaround
     # https://github.com/tiangolo/sqlmodel/issues/178#issuecomment-1044569342
-    location: typing.List[int] = Field(
-        sa_column=Column(postgresql.ARRAY(Integer()))
-    )
+    location: typing.List[int] = Field(sa_column=Column(postgresql.ARRAY(Integer())))
 
 
 class FeatureTypes(str, enum.Enum):
+    """Expected feature types."""
+
     NE = "NE"
     NP = "NP"
 
 
 class FeaturePayload(SQLModel):
+    """Input fields that POST /features/ endpoint expects."""
+
     text: str
 
 
 class _FeatureResponse(SQLModel):
+    """Single feature response fields."""
+
     feature_id: int
     document_id: uuid.UUID
     feature_type: FeatureTypes
@@ -96,12 +105,17 @@ class _FeatureResponse(SQLModel):
     match_normalized: str
     location: typing.List[int]
 
+
 class FeatureResponse(SQLModel):
+    """Features response fields."""
+
     successful: bool
     features: typing.List[_FeatureResponse]
 
 
 class SpeechesResponse(SQLModel):
+    """Speeches response fields."""
+
     id: uuid.UUID
     title: str
     text: str
