@@ -20,6 +20,7 @@ def custom_uuid() -> uuid.UUID:
         val = uuid.uuid4()
     return val
 
+
 # SQLModel tables
 class Metadata(SQLModel, table=True):
     """public.metadata schema."""
@@ -37,18 +38,19 @@ class Metadata(SQLModel, table=True):
     date: datetime.date
     URL: HttpUrl
     category: typing.Optional[str] = Field(default=None)
-    
+
     # Relationship
+    # one-to-many
     features: typing.List["Features"] = Relationship(
         back_populates="meta",
         sa_relationship_kwargs={
-            "primaryjoin": "Metadata.id==Features.document_id", 
-        }
+            "primaryjoin": "Metadata.id==Features.document_id",
+        },
     )
+    # one-to-one
     text: "Texts" = Relationship(
         back_populates="meta",
-        # one-to-one relationship 
-        sa_relationship_kwargs={"uselist": False}
+        sa_relationship_kwargs={"uselist": False},
     )
 
 
@@ -63,11 +65,10 @@ class Texts(SQLModel, table=True):
         foreign_key="metadata.id",
     )
     text: str = Field(index=False)
-    
+
     # Relationship
     meta: Metadata = Relationship(
-        back_populates="text",
-        sa_relationship_kwargs={"uselist": False}
+        back_populates="text", sa_relationship_kwargs={"uselist": False}
     )
 
 
@@ -103,27 +104,56 @@ class ParsedText(SQLModel):
     URL: HttpUrl
     category: typing.Optional[str] = Field(default=None)
 
-# Speeches
-# read_speeches
-class ResponseMeta(SQLModel):
+
+# /speeches/
+class ResponseMetadata(SQLModel):
     """Metadata response model."""
+
     id: uuid.UUID
     created_at: datetime.datetime
     date: datetime.date
     title: str
     URL: HttpUrl
 
-class ResponseMT(ResponseMeta):
-    """Metadata + text response model."""
-    # extras
-    # defining text as str as opposed to Texts
-    # because I only care about Texts.text field
-    text: str
 
-class ResponseMTF(ResponseMeta):
+class ResponseMTF(ResponseMetadata):
     """Metadata with joined text and features."""
+
     text: str
     # using Optional to levearage response_model_exclude_none
     # to just omit 'features' fields from the response
     # when features were not requested
     features: typing.Optional[typing.List[Features]] = None
+
+
+# /features/
+class FeaturesTypes(str, enum.Enum):
+    """Expected feature types."""
+
+    NE = "NE"
+    NP = "NP"
+
+
+class FeaturesPayload(SQLModel):
+    """Input fields that POST /features/ endpoint expects."""
+
+    text: str
+
+
+class ResponseFeature(SQLModel):
+    """Single feature response model."""
+
+    feature_id: int
+    document_id: uuid.UUID
+    feature_type: str
+    feature_label: str
+    match: str
+    match_normalized: str
+    location: typing.List[int]
+
+
+class ResponseFeatures(SQLModel):
+    """Features response model."""
+
+    successful: bool
+    features: typing.List[ResponseFeature]
