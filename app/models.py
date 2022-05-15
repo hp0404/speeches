@@ -103,6 +103,8 @@ class ParsedText(SQLModel):
     URL: HttpUrl
     category: typing.Optional[str] = Field(default=None)
 
+# Speeches
+# read_speeches
 class ResponseMeta(SQLModel):
     """Metadata response model."""
     id: uuid.UUID
@@ -110,16 +112,6 @@ class ResponseMeta(SQLModel):
     date: datetime.date
     title: str
     URL: HttpUrl
-
-# Speeches
-# read_speeches
-class SpeachesReadResponse(SQLModel):
-    id: uuid.UUID
-
-class ResponseMF(ResponseMeta):
-    """Metadata + features response model."""
-    # extras
-    features: typing.List[Features] = []
 
 class ResponseMT(ResponseMeta):
     """Metadata + text response model."""
@@ -129,5 +121,9 @@ class ResponseMT(ResponseMeta):
     text: str
 
 class ResponseMTF(ResponseMeta):
+    """Metadata with joined text and features."""
     text: str
-    features: typing.List[Features] = []
+    # using Optional to levearage response_model_exclude_none
+    # to just omit 'features' fields from the response
+    # when features were not requested
+    features: typing.Optional[typing.List[Features]] = None
