@@ -21,7 +21,7 @@ tags_metadata = [
 app = FastAPI(
     title=settings.PROJECT_NAME,
     description=settings.DESCRIPTION,
-    version="0.0.2",
+    version="0.0.3",
     contact={"name": "support", "email": settings.EMAILS_FROM_EMAIL},
     openapi_tags=tags_metadata,
 )
