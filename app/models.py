@@ -145,7 +145,7 @@ class ResponseFeature(SQLModel):
 
     feature_id: int
     document_id: uuid.UUID
-    feature_type: str
+    feature_type: FeaturesTypes
     feature_label: str
     match: str
     match_normalized: str
