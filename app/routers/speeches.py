@@ -7,13 +7,20 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, desc, select
 
 from app.ml import feature_extractor
-from app.models import ParsedText, Metadata, Texts, Features, ResponseMeta, ResponseMTF
+from app.models import (
+    ParsedText,
+    Metadata,
+    Texts,
+    Features,
+    ResponseMetadata,
+    ResponseMTF,
+)
 from app.database import get_session
 
 router = APIRouter(prefix="/speeches", tags=["speeches"])
 
 
-@router.get("/", include_in_schema=False, response_model=typing.List[ResponseMeta])
+@router.get("/", include_in_schema=False, response_model=typing.List[ResponseMetadata])
 def read_speeches(
     offset: int = 0,
     limit: int = 5,
@@ -49,7 +56,8 @@ def create_speeches(
 
     data_tuples = [(payload.text, metadata.id)]
     for feature in feature_extractor.stream(data_tuples):
-        metadata.features.append(Features(**feature))
+        found_feature = Features(**feature)
+        metadata.features.append(found_feature)  # pylint: disable=no-member
     session.add(metadata)
     session.commit()
     return {"ok": True}
