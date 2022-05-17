@@ -6,7 +6,7 @@ import typing
 import datetime
 
 from pydantic import HttpUrl
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field, SQLModel, Relationship
 from sqlalchemy import Column, Integer
 from sqlalchemy.dialects import postgresql
 
@@ -21,16 +21,7 @@ def custom_uuid() -> uuid.UUID:
     return val
 
 
-class ParsedText(SQLModel):
-    """Input fields that POST /speeches/ endpoint expects."""
-
-    title: str
-    text: str
-    date: datetime.date
-    URL: HttpUrl
-    category: typing.Optional[str] = Field(default=None)
-
-
+# SQLModel tables
 class Metadata(SQLModel, table=True):
     """public.metadata schema."""
 
@@ -48,6 +39,20 @@ class Metadata(SQLModel, table=True):
     URL: HttpUrl
     category: typing.Optional[str] = Field(default=None)
 
+    # Relationship
+    # one-to-many
+    features: typing.List["Features"] = Relationship(
+        back_populates="meta",
+        sa_relationship_kwargs={
+            "primaryjoin": "Metadata.id==Features.document_id",
+        },
+    )
+    # one-to-one
+    text: "Texts" = Relationship(
+        back_populates="meta",
+        sa_relationship_kwargs={"uselist": False},
+    )
+
 
 class Texts(SQLModel, table=True):
     """public.texts schema."""
@@ -60,6 +65,11 @@ class Texts(SQLModel, table=True):
         foreign_key="metadata.id",
     )
     text: str = Field(index=False)
+
+    # Relationship
+    meta: Metadata = Relationship(
+        back_populates="text", sa_relationship_kwargs={"uselist": False}
+    )
 
 
 class Features(SQLModel, table=True):
@@ -80,46 +90,51 @@ class Features(SQLModel, table=True):
     # https://github.com/tiangolo/sqlmodel/issues/178#issuecomment-1044569342
     location: typing.List[int] = Field(sa_column=Column(postgresql.ARRAY(Integer())))
 
+    # Relationship
+    meta: Metadata = Relationship(back_populates="features")
 
-class FeatureTypes(str, enum.Enum):
+
+# SQLModels
+class ParsedText(SQLModel):
+    """Input fields that POST /speeches/ endpoint expects."""
+
+    title: str
+    text: str
+    date: datetime.date
+    URL: HttpUrl
+    category: typing.Optional[str] = Field(default=None)
+
+
+# /speeches/
+class ResponseMetadata(SQLModel):
+    """Metadata response model."""
+
+    id: uuid.UUID
+    created_at: datetime.datetime
+    date: datetime.date
+    title: str
+    URL: HttpUrl
+
+
+class ResponseMTF(ResponseMetadata):
+    """Metadata with joined text and features."""
+
+    text: str
+    # using Optional to levearage response_model_exclude_none
+    # to just omit 'features' fields from the response
+    # when features were not requested
+    features: typing.Optional[typing.List[Features]] = None
+
+
+# /features/
+class FeaturesTypes(str, enum.Enum):
     """Expected feature types."""
 
     NE = "NE"
     NP = "NP"
 
 
-class FeaturePayload(SQLModel):
+class FeaturesPayload(SQLModel):
     """Input fields that POST /features/ endpoint expects."""
 
     text: str
-
-
-class _FeatureResponse(SQLModel):
-    """Single feature response fields."""
-
-    feature_id: int
-    document_id: uuid.UUID
-    feature_type: FeatureTypes
-    feature_label: str
-    match: str
-    match_normalized: str
-    location: typing.List[int]
-
-
-class FeatureResponse(SQLModel):
-    """Features response fields."""
-
-    successful: bool
-    features: typing.List[_FeatureResponse]
-
-
-class SpeechesResponse(SQLModel):
-    """Speeches response fields."""
-
-    id: uuid.UUID
-    title: str
-    text: str
-    date: datetime.date
-    created_at: datetime.datetime
-    URL: HttpUrl
-    features: typing.Optional[typing.List[_FeatureResponse]] = None

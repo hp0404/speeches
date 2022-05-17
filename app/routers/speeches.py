@@ -7,18 +7,23 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, desc, select
 
 from app.ml import feature_extractor
-from app.models import ParsedText, Metadata, Texts, Features, SpeechesResponse
+from app.models import (
+    ParsedText,
+    Metadata,
+    Texts,
+    Features,
+    ResponseMetadata,
+    ResponseMTF,
+)
 from app.database import get_session
 
 router = APIRouter(prefix="/speeches", tags=["speeches"])
 
 
-@router.get("/", include_in_schema=False, response_model=typing.List[Metadata])
+@router.get("/", include_in_schema=False, response_model=typing.List[ResponseMetadata])
 def read_speeches(
-    offset: int = 0,
-    limit: int = 5,
-    session: Session = Depends(get_session),
-) -> typing.List[Metadata]:
+    offset: int = 0, limit: int = 5, session: Session = Depends(get_session)
+):
     """Queries the latest entries of the metadata table."""
     query = (
         select(Metadata)
@@ -30,10 +35,7 @@ def read_speeches(
 
 
 @router.post("/", include_in_schema=False, response_model=typing.Dict[str, bool])
-def create_speeches(
-    payload: ParsedText,
-    session: Session = Depends(get_session),
-) -> typing.Dict[str, bool]:
+def create_speeches(payload: ParsedText, session: Session = Depends(get_session)):
     """Creates speeches.
 
     It does so by moving payload fields to corresponding tables and
@@ -45,49 +47,29 @@ def create_speeches(
         URL=payload.URL,
         category=payload.category,
     )
-    texts = Texts(id=metadata.id, text=payload.text)
-    session.add(metadata)
-    session.add(texts)
-    session.commit()
-    session.refresh(metadata)
-    session.refresh(texts)
+    metadata.text = Texts(text=payload.text)
 
     data_tuples = [(payload.text, metadata.id)]
     for feature in feature_extractor.stream(data_tuples):
         found_feature = Features(**feature)
-        session.add(found_feature)
+        metadata.features.append(found_feature)  # pylint: disable=no-member
+    session.add(metadata)
     session.commit()
     return {"ok": True}
 
 
-@router.get("/{id}", response_model=SpeechesResponse)
+@router.get("/{id}", response_model=ResponseMTF, response_model_exclude_none=True)
 def read_speech_by_id(
     id: uuid.UUID,  # pylint: disable=redefined-builtin,invalid-name
     include_features: bool = False,
     session: Session = Depends(get_session),
-) -> SpeechesResponse:
+):
     """Reads speeches."""
-
     metadata = session.get(Metadata, id)
     if not metadata:
         raise HTTPException(status_code=404, detail="Document not found")
-
-    texts = session.get(Texts, id)
-    assert texts is not None, "Text not found, something went wrong."
-
+    metadata_as_dict = metadata.dict()
+    metadata_as_dict["text"] = metadata.text.text
     if include_features:
-        features = session.exec(
-            select(Features).where(Features.document_id == id)
-        ).all()
-    else:
-        features = None
-
-    return SpeechesResponse(
-        id=metadata.id,
-        title=metadata.title,
-        text=texts.text,
-        date=metadata.date,
-        created_at=metadata.created_at,
-        URL=metadata.URL,
-        features=features,
-    )
+        metadata_as_dict["features"] = metadata.features
+    return metadata_as_dict
