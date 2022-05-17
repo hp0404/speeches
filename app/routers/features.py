@@ -8,13 +8,13 @@ from sqlmodel import Session, select
 
 from app.ml import feature_extractor
 from app.models import custom_uuid
-from app.models import Features, FeaturesTypes, FeaturesPayload, ResponseFeatures
+from app.models import Features, FeaturesTypes, FeaturesPayload
 from app.database import get_session
 
 router = APIRouter(prefix="/features", tags=["features"])
 
 
-@router.post("/", response_model=ResponseFeatures)
+@router.post("/", response_model=typing.List[Features])
 def extract_features_from_text(data: FeaturesPayload):
     """Runs feature extraction pipeline without writing to the database."""
     features = []
@@ -24,7 +24,7 @@ def extract_features_from_text(data: FeaturesPayload):
         features.append(feature)
     if not features:
         raise HTTPException(status_code=404, detail="Features not found")
-    return ResponseFeatures(successful=True, features=features)
+    return features
 
 
 @router.get("/{document_id}", response_model=typing.List[Features])

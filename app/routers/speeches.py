@@ -22,9 +22,7 @@ router = APIRouter(prefix="/speeches", tags=["speeches"])
 
 @router.get("/", include_in_schema=False, response_model=typing.List[ResponseMetadata])
 def read_speeches(
-    offset: int = 0,
-    limit: int = 5,
-    session: Session = Depends(get_session),
+    offset: int = 0, limit: int = 5, session: Session = Depends(get_session)
 ):
     """Queries the latest entries of the metadata table."""
     query = (
@@ -37,10 +35,7 @@ def read_speeches(
 
 
 @router.post("/", include_in_schema=False, response_model=typing.Dict[str, bool])
-def create_speeches(
-    payload: ParsedText,
-    session: Session = Depends(get_session),
-):
+def create_speeches(payload: ParsedText, session: Session = Depends(get_session)):
     """Creates speeches.
 
     It does so by moving payload fields to corresponding tables and
@@ -77,4 +72,4 @@ def read_speech_by_id(
     metadata_as_dict["text"] = metadata.text.text
     if include_features:
         metadata_as_dict["features"] = metadata.features
-    return ResponseMTF(**metadata_as_dict)
+    return metadata_as_dict

@@ -138,22 +138,3 @@ class FeaturesPayload(SQLModel):
     """Input fields that POST /features/ endpoint expects."""
 
     text: str
-
-
-class ResponseFeature(SQLModel):
-    """Single feature response model."""
-
-    feature_id: int
-    document_id: uuid.UUID
-    feature_type: FeaturesTypes
-    feature_label: str
-    match: str
-    match_normalized: str
-    location: typing.List[int]
-
-
-class ResponseFeatures(SQLModel):
-    """Features response model."""
-
-    successful: bool
-    features: typing.List[ResponseFeature]
