@@ -6,8 +6,9 @@ jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        python-version: [3.8, 3.9, 3.10]
+        python-version: ['3.8', '3.9', '3.10']
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
@@ -23,7 +24,9 @@ jobs:
           ${{ runner.os }}-pip-
     - name: Install dependencies
       run: |
-        pip install -r requirements.txt
+        python -m pip install --upgrade pip
+        pip install wheel
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Run tests
       run: |
         pytest 
