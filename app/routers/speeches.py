@@ -65,7 +65,7 @@ def delete_speech_by_id(
 ):
     data = session.get(Metadata, id)
     if not data:
-        raise HTTPException(status_code=404, detail="Item not found")
+        raise HTTPException(status_code=404, detail="Document not found")
     session.delete(data)
     session.commit()
     return {"detail": f"deleted id={id}"}

@@ -40,5 +40,5 @@ def read_features_by_document(
         doc = doc.where(Features.feature_type == feature_type)
     features = session.exec(doc.offset(offset).limit(limit)).all()
     if not features:
-        raise HTTPException(status_code=404, detail="Document not found")
+        raise HTTPException(status_code=404, detail="Features not found")
     return features
