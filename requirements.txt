@@ -10,3 +10,4 @@ tenacity==8.0.1
 emails==0.6
 email-validator==1.2.1
 SQLAlchemy==1.4.35
+pytest==7.1.2
