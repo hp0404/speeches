@@ -34,7 +34,7 @@ def read_speeches(
     return session.exec(query).all()
 
 
-@router.post("/", include_in_schema=False, response_model=typing.Dict[str, bool])
+@router.post("/", include_in_schema=False, response_model=typing.Dict[str, str])
 def create_speeches(payload: ParsedText, session: Session = Depends(get_session)):
     """Creates speeches.
 
@@ -55,7 +55,20 @@ def create_speeches(payload: ParsedText, session: Session = Depends(get_session)
         metadata.features.append(found_feature)  # pylint: disable=no-member
     session.add(metadata)
     session.commit()
-    return {"ok": True}
+    return {"id": str(metadata.id)}
+
+
+@router.delete("/{id}")
+def delete_speech_by_id(
+    id: uuid.UUID,  # pylint: disable=redefined-builtin,invalid-name
+    session: Session = Depends(get_session),
+):
+    data = session.get(Metadata, id)
+    if not data:
+        raise HTTPException(status_code=404, detail="Item not found")
+    session.delete(data)
+    session.commit()
+    return {"detail": f"deleted id={id}"}
 
 
 @router.get("/{id}", response_model=ResponseMTF, response_model_exclude_none=True)

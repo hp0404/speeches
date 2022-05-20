@@ -45,12 +45,16 @@ class Metadata(SQLModel, table=True):
         back_populates="meta",
         sa_relationship_kwargs={
             "primaryjoin": "Metadata.id==Features.document_id",
+            "cascade": "all,delete,delete-orphan",
         },
     )
     # one-to-one
     text: "Texts" = Relationship(
         back_populates="meta",
-        sa_relationship_kwargs={"uselist": False},
+        sa_relationship_kwargs={
+            "uselist": False,
+            "cascade": "all,delete,delete-orphan",
+        },
     )
 
 
