@@ -1,5 +1,7 @@
 import pytest
 
+METHOD_NOT_ALLOWED = {"detail": "Method Not Allowed"}
+FEATURES_NOT_FOUND = {"detail": "Features not found"}
 VALIDATION_ERROR = {
     "detail": [
         {
@@ -14,7 +16,7 @@ VALIDATION_ERROR = {
 @pytest.mark.parametrize(
     "invalid_id,expected_status,expected_response",
     [
-        ("", 405, {"detail": "Method Not Allowed"}),
+        ("", 405, METHOD_NOT_ALLOWED),
         ("first_document", 422, VALIDATION_ERROR),
         (1, 422, VALIDATION_ERROR),
     ],
@@ -38,7 +40,7 @@ def test_read_features_by_document_document_not_found(client, missing_document):
         headers={"Authorization": "Bearer foobar"},
     )
     assert response.status_code == 404
-    assert response.json()["detail"] == "Document not found"
+    assert response.json() == FEATURES_NOT_FOUND
 
 
 def test_read_features_by_document_document_found(client, uuids):
@@ -72,7 +74,7 @@ def test_read_features_by_document_document_found_limit_failure(client, uuids):
         headers={"Authorization": "Bearer foobar"},
     )
     assert response.status_code == 404
-    assert response.json()["detail"] == "Document not found"
+    assert response.json() == FEATURES_NOT_FOUND
 
 
 @pytest.mark.parametrize(
@@ -132,9 +134,20 @@ def test_read_features_by_document_document_found_limit_failure(client, uuids):
         ),
     ],
 )
-def test_extract_features_from_text(client, payload, expected_response):
+def test_extract_features_from_text_success(client, payload, expected_response):
     """Test ML"""
     response = client.post(
         "/features/", json=payload, headers={"Authorization": "Bearer foobar"}
     )
     assert response.json() == expected_response
+
+
+def test_extract_features_from_text_failure(client):
+    """ """
+    payload_without_features = {"text": "Отправить текст"}
+    response = client.post(
+        "/features/",
+        json=payload_without_features,
+        headers={"Authorization": "Bearer foobar"},
+    )
+    assert response.json() == FEATURES_NOT_FOUND

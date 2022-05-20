@@ -1,5 +1,6 @@
 import pytest
 
+DOCUMENT_NOT_FOUND = {"detail": "Document not found"}
 VALIDATION_ERROR = {
     "detail": [
         {
@@ -53,7 +54,7 @@ def test_create_delete_speeches_success(client, sample_data):
             f"/speeches/{uuid}", headers={"Authorization": "Bearer foobar"}
         )
         response.status_code == 200
-        assert response.json()["detail"] == f"deleted id={uuid}"
+        assert response.json() == {"detail": f"deleted id={uuid}"}
 
 
 def test_delete_speech_by_id_failure(client, missing_document):
@@ -62,10 +63,10 @@ def test_delete_speech_by_id_failure(client, missing_document):
         f"/speeches/{missing_document}", headers={"Authorization": "Bearer foobar"}
     )
     assert response.status_code == 404
-    assert response.json()["detail"] == "Item not found"
+    assert response.json() == DOCUMENT_NOT_FOUND
 
 
-def test_read_speeches(client):
+def test_read_speeches(client, uuids):
     """Read all speeches from a hidden endpoint."""
     response = client.get("/speeches/", headers={"Authorization": "Bearer foobar"})
     assert response.status_code == 200
@@ -74,7 +75,7 @@ def test_read_speeches(client):
     assert data[0]["title"] == "Новость 1"
 
 
-def test_read_speeches_offset_limit(client):
+def test_read_speeches_offset_limit(client, uuids):
     """Read speeches using offset & limit params."""
     response = client.get(
         "/speeches/?offset=1&limit=1", headers={"Authorization": "Bearer foobar"}
@@ -84,13 +85,22 @@ def test_read_speeches_offset_limit(client):
     assert data[0]["title"] == "Новость 2"
 
 
-def test_read_speech_by_id(client, uuids):
+def test_read_speech_by_id_success(client, uuids):
     """Read document by id."""
     response = client.get(
         f"/speeches/{uuids[0]}", headers={"Authorization": "Bearer foobar"}
     )
     data = response.json()
     assert len(data) == 6
+
+
+def test_read_speech_by_id_failure(client, missing_document):
+    """Read document by id."""
+    response = client.get(
+        f"/speeches/{missing_document}", headers={"Authorization": "Bearer foobar"}
+    )
+    assert response.status_code == 404
+    assert response.json() == DOCUMENT_NOT_FOUND
 
 
 def test_read_speech_by_id_with_features(client, uuids):
