@@ -72,15 +72,9 @@ class Texts(SQLModel, table=True):
     )
 
 
-class Features(SQLModel, table=True):
-    """public.features schema."""
+class ResponseFeatures(SQLModel):
+    """Response Feature model without document & feature ids."""
 
-    feature_id: typing.Optional[int] = Field(default=None, primary_key=True, index=True)
-    document_id: typing.Optional[uuid.UUID] = Field(
-        nullable=False,
-        default=None,
-        foreign_key="metadata.id",
-    )
     feature_type: str
     feature_label: str
     match: str
@@ -90,6 +84,16 @@ class Features(SQLModel, table=True):
     # https://github.com/tiangolo/sqlmodel/issues/178#issuecomment-1044569342
     location: typing.List[int] = Field(sa_column=Column(postgresql.ARRAY(Integer())))
 
+
+class Features(ResponseFeatures, table=True):
+    """public.features schema."""
+
+    feature_id: typing.Optional[int] = Field(default=None, primary_key=True, index=True)
+    document_id: typing.Optional[uuid.UUID] = Field(
+        nullable=False,
+        default=None,
+        foreign_key="metadata.id",
+    )
     # Relationship
     meta: Metadata = Relationship(back_populates="features")
 
