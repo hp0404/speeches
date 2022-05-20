@@ -72,10 +72,17 @@ def sample_data():
 
 @pytest.fixture(scope="session")
 def uuids(client, sample_data):
+    # building sample database
     uuids = []
     for item in sample_data:
         response = client.post(
             "/speeches/", json=item, headers={"Authorization": "Bearer foobar"}
         )
         uuids.append(response.json()["id"])
-    return uuids
+    # use for GET requests
+    yield uuids
+    # cleaning up
+    for uuid in uuids:
+        response = client.delete(
+            f"/speeches/{uuid}", headers={"Authorization": "Bearer foobar"}
+        )
