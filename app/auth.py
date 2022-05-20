@@ -9,12 +9,14 @@ from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from starlette import status
 
-from app.core.config import settings
+from app.core.config import Settings, get_settings
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
-def auth_request(token: str = Depends(oauth2_scheme)) -> bool:
+def auth_request(
+    token: str = Depends(oauth2_scheme), settings: Settings = Depends(get_settings)
+) -> bool:
     """Verifies token against secret token stored in .env."""
     authenticated = token == settings.SECRET_TOKEN
     if not authenticated:

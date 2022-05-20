@@ -67,4 +67,6 @@ class Settings(BaseSettings):
         env_file = ".env"
 
 
-settings = Settings()
+def get_settings() -> Settings:
+    """Creates settings - used for dependency injection."""
+    return Settings()

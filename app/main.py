@@ -6,8 +6,9 @@ from starlette.responses import RedirectResponse
 
 from app.auth import auth_request
 from app.routers import speeches, features, notifications
-from app.core.config import settings
+from app.core.config import get_settings
 
+settings = get_settings()
 tags_metadata = [
     {
         "name": "speeches",
@@ -34,9 +35,15 @@ app.add_middleware(
 )
 # adding router dependencies separately to keep /docs accessible
 # otherwise would've set app-level dependecy
-app.include_router(speeches.router, dependencies=[Depends(auth_request)])
-app.include_router(features.router, dependencies=[Depends(auth_request)])
-app.include_router(notifications.router, dependencies=[Depends(auth_request)])
+app.include_router(
+    speeches.router, dependencies=[Depends(auth_request), Depends(get_settings)]
+)
+app.include_router(
+    features.router, dependencies=[Depends(auth_request), Depends(get_settings)]
+)
+app.include_router(
+    notifications.router, dependencies=[Depends(auth_request), Depends(get_settings)]
+)
 
 
 @app.get("/", include_in_schema=False)

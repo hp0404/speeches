@@ -5,15 +5,16 @@ import logging
 
 import emails  # type: ignore
 from emails.template import JinjaTemplate  # type: ignore
-from fastapi import BackgroundTasks, APIRouter
+from fastapi import BackgroundTasks, APIRouter, Depends
 
-from app.core.config import settings
+from app.core.config import Settings, get_settings
 
 router = APIRouter(prefix="/send-notification")
 
 
 def send_email(
     email_to: str,
+    settings: Settings,
     subject_template: str = "",
     html_template: str = "",
     environment: typing.Optional[typing.Dict[str, typing.Any]] = None,
@@ -36,11 +37,20 @@ def send_email(
     logging.info(f"send email result: {response}")  # pylint: disable=logging-fstring-interpolation
 
 
-@router.post("/{email}", include_in_schema=False, response_model=typing.Dict[str, str])
-async def send_notification(email: str, background_tasks: BackgroundTasks):
+@router.post(
+    "/{email}",
+    include_in_schema=False,
+    response_model=typing.Dict[str, str],
+)
+async def send_notification(
+    email: str,
+    background_tasks: BackgroundTasks,
+    settings: Settings = Depends(get_settings),
+):
     """Sends generic message updating on the status of cronjob workflow."""
     background_tasks.add_task(
         send_email,
+        settings=settings,
         email_to=email,
         subject_template="[{{ proj }}]: Run completed",
         html_template="<p>The database has been updated...</p>",
