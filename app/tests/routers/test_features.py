@@ -31,10 +31,10 @@ def test_read_features_by_document_invalid_uuid(
     assert response.json() == expected_response
 
 
-def test_read_features_by_document_document_not_found(client):
+def test_read_features_by_document_document_not_found(client, missing_document):
     """Document not found."""
     response = client.get(
-        "/features/ab124f2d-e627-49fd-1111-a380117c3bb9",
+        f"/features/{missing_document}",
         headers={"Authorization": "Bearer foobar"},
     )
     assert response.status_code == 404

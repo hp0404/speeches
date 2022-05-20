@@ -35,16 +35,34 @@ def test_create_speeches_failure(client, sample_data):
     assert response.json() == VALIDATION_ERROR
 
 
-def test_create_speeches_success(client, sample_data):
-    """Proper create_speeches test, but it creates +2 entries besides pytest.fixture;
-    somehow need to fix it, for now it's the last test so it doesn't change much.
-    """
+def test_create_delete_speeches_success(client, sample_data):
+    """Creates entires & deletes them to avoid polluting database with new entries."""
+    # create
+    added_uuids = []
     for item in sample_data:
         response = client.post(
             "/speeches/", json=item, headers={"Authorization": "Bearer foobar"}
         )
         assert response.status_code == 200
-        assert response.json() == {"ok": True}
+        assert "id" in response.json()
+        added_uuids.append(response.json()["id"])
+
+    # delete
+    for uuid in added_uuids:
+        response = client.delete(
+            f"/speeches/{uuid}", headers={"Authorization": "Bearer foobar"}
+        )
+        response.status_code == 200
+        assert response.json()["detail"] == f"deleted id={uuid}"
+
+
+def test_delete_speech_by_id_failure(client, missing_document):
+    """ """
+    response = client.delete(
+        f"/speeches/{missing_document}", headers={"Authorization": "Bearer foobar"}
+    )
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Item not found"
 
 
 def test_read_speeches(client):
@@ -52,7 +70,7 @@ def test_read_speeches(client):
     response = client.get("/speeches/", headers={"Authorization": "Bearer foobar"})
     assert response.status_code == 200
     data = response.json()
-    # assert len(data) == 2
+    assert len(data) == 2
     assert data[0]["title"] == "Новость 1"
 
 

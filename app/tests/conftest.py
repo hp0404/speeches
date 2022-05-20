@@ -11,6 +11,11 @@ from app.auth import auth_request, oauth2_scheme
 from app.main import app
 
 
+@pytest.fixture(scope="module")
+def missing_document():
+    return "ab124f2d-1111-1111-1111-a380117c3bb9"
+
+
 @pytest.fixture(scope="session")
 def session():
     """Fake session
@@ -67,9 +72,10 @@ def sample_data():
 
 @pytest.fixture(scope="session")
 def uuids(client, sample_data):
+    uuids = []
     for item in sample_data:
-        client.post("/speeches/", json=item, headers={"Authorization": "Bearer foobar"})
-    # returning UUIDs so we could use them to test specific endpoints
-    response = client.get("/speeches/", headers={"Authorization": "Bearer foobar"})
-    data = response.json()
-    return [item["id"] for item in data]
+        response = client.post(
+            "/speeches/", json=item, headers={"Authorization": "Bearer foobar"}
+        )
+        uuids.append(response.json()["id"])
+    return uuids
