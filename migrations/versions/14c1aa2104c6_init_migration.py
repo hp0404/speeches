@@ -1,8 +1,8 @@
-"""New schema
+"""init migration
 
-Revision ID: ebc60714101b
+Revision ID: 14c1aa2104c6
 Revises: 
-Create Date: 2022-05-01 14:33:28.870853
+Create Date: 2022-05-20 16:08:06.553274
 
 """
 from alembic import op
@@ -11,7 +11,7 @@ import sqlmodel
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = 'ebc60714101b'
+revision = '14c1aa2104c6'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -30,13 +30,13 @@ def upgrade():
     )
     op.create_index(op.f('ix_metadata_id'), 'metadata', ['id'], unique=False)
     op.create_table('features',
-    sa.Column('feature_id', sa.Integer(), nullable=True),
-    sa.Column('document_id', sqlmodel.sql.sqltypes.GUID(), nullable=False),
+    sa.Column('location', postgresql.ARRAY(sa.Integer()), nullable=True),
     sa.Column('feature_type', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('feature_label', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('match', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('match_normalized', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
-    sa.Column('location', postgresql.ARRAY(sa.Integer()), nullable=True),
+    sa.Column('feature_id', sa.Integer(), nullable=True),
+    sa.Column('document_id', sqlmodel.sql.sqltypes.GUID(), nullable=False),
     sa.ForeignKeyConstraint(['document_id'], ['metadata.id'], ),
     sa.PrimaryKeyConstraint('feature_id')
     )
