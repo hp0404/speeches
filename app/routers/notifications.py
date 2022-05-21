@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 """This module contains /send-notification/ router."""
-import logging
 import typing
 
 import emails  # type: ignore
@@ -18,7 +17,7 @@ def send_email(
     subject_template: str = "",
     html_template: str = "",
     environment: typing.Optional[typing.Dict[str, typing.Any]] = None,
-) -> None:
+) -> emails.backend.response.SMTPResponse:
     """Generic utility function that builds and sends template messages."""
     assert settings.EMAILS_ENABLED, "no provided configuration for email variables"
     message = emails.Message(
@@ -33,8 +32,7 @@ def send_email(
         smtp_options["user"] = settings.SMTP_USER
     if settings.SMTP_PASSWORD:
         smtp_options["password"] = settings.SMTP_PASSWORD
-    response = message.send(to=email_to, render=environment or {}, smtp=smtp_options)
-    logging.info(f"send email result: {response}")  # pylint: disable=logging-fstring-interpolation
+    return message.send(to=email_to, render=environment or {}, smtp=smtp_options)
 
 
 @router.post(
