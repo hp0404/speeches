@@ -28,7 +28,8 @@ VALIDATION_ERROR = {
 
 
 def test_create_speeches_failure(client, sample_data):
-    """Fail when passing list of elements."""
+    """Failed request: the server responds with a validation error on
+    invalid input payload."""
     response = client.post(
         "/speeches/", json=sample_data, headers={"Authorization": "Bearer foobar"}
     )
@@ -37,7 +38,7 @@ def test_create_speeches_failure(client, sample_data):
 
 
 def test_create_delete_speeches_success(client, sample_data):
-    """Creates entires & deletes them to avoid polluting database with new entries."""
+    """Successful request: the client adds two entries and then deletes them."""
     # create
     added_uuids = []
     for item in sample_data:
@@ -57,8 +58,18 @@ def test_create_delete_speeches_success(client, sample_data):
         assert response.json() == {"detail": f"deleted id={uuid}"}
 
 
+def test_read_speech_by_id_failure(client, missing_document):
+    """Failed request: input id is valid but not found (passed validation)."""
+    response = client.get(
+        f"/speeches/{missing_document}", headers={"Authorization": "Bearer foobar"}
+    )
+    assert response.status_code == 404
+    assert response.json() == DOCUMENT_NOT_FOUND
+
+
 def test_delete_speech_by_id_failure(client, missing_document):
-    """Make sure the response for non-existing document is correct."""
+    """Failed request: input id is valid but not found (passed validation),
+    thus it cannot be deleted."""
     response = client.delete(
         f"/speeches/{missing_document}", headers={"Authorization": "Bearer foobar"}
     )
@@ -67,7 +78,7 @@ def test_delete_speech_by_id_failure(client, missing_document):
 
 
 def test_read_speech_by_id_success(client, uuids):
-    """Read document by id."""
+    """Successful request: input id is valid and found."""
     response = client.get(
         f"/speeches/{uuids[0]}", headers={"Authorization": "Bearer foobar"}
     )
@@ -75,17 +86,8 @@ def test_read_speech_by_id_success(client, uuids):
     assert len(data) == 6
 
 
-def test_read_speech_by_id_failure(client, missing_document):
-    """Read document by id."""
-    response = client.get(
-        f"/speeches/{missing_document}", headers={"Authorization": "Bearer foobar"}
-    )
-    assert response.status_code == 404
-    assert response.json() == DOCUMENT_NOT_FOUND
-
-
 def test_read_speech_by_id_with_features(client, uuids):
-    """Read document by id including features."""
+    """Successful request: input id is valid and found, response includes features."""
     response = client.get(
         f"/speeches/{uuids[1]}?include_features=true",
         headers={"Authorization": "Bearer foobar"},
@@ -108,7 +110,7 @@ def test_read_speech_by_id_with_features(client, uuids):
 
 
 def test_read_speeches(client):
-    """Read all speeches from a hidden endpoint."""
+    """Successful request: hidden enpoint responds with metadata's entries"""
     response = client.get("/speeches/", headers={"Authorization": "Bearer foobar"})
     assert response.status_code == 200
     data = response.json()
@@ -117,7 +119,8 @@ def test_read_speeches(client):
 
 
 def test_read_speeches_offset_limit(client):
-    """Read speeches using offset & limit params."""
+    """Successful request: hidden enpoint responds with metadata's entries,
+    additional parameters -- offset and limit -- seem to work."""
     response = client.get(
         "/speeches/?offset=1&limit=1", headers={"Authorization": "Bearer foobar"}
     )

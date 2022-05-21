@@ -10,34 +10,34 @@ patterns_directory = (
 
 
 def test_create_pipeline():
-    """Making sure the pipeline works out of the box."""
+    """Successful initialization of ML's create_pipeline
+    with default values."""
     ml = create_pipeline()
     assert ml is not None
 
 
-@pytest.mark.parametrize("model", ["blank", "en", "invalid_name"])
-def test_create_pipeline_model_failure(model):
-    """Raising error on invalid model name."""
-    with pytest.raises(OSError):
-        ml = create_pipeline(model=model)
-
-
 def test_create_pipeline_patterns_dir():
-    """Making sure that internal build_phrase_matcher method can
-    handle directory input."""
+    """Successful initialization: interal build_phrase_matcher method
+    can handle directory input."""
     ml = create_pipeline(patterns=patterns_directory)
     assert ml is not None
 
 
 def test_create_pipeline_patterns_file():
-    """Making sure that internal build_phrase_matcher method can
-    handle file input."""
+    """Successful initialization: interal build_phrase_matcher method
+    can handle file input."""
     ml = create_pipeline(patterns=patterns_directory / "matcher.json")
     assert ml is not None
 
 
 def test_create_pipeline_patterns_raise():
-    """Making sure that internal build_phrase_matcher method can
-    hande invalid string input."""
+    """Failed initialization: raising ValueError on invalid patterns input."""
     with pytest.raises(ValueError):
-        ml = create_pipeline(patterns="match all noun-phrases please")
+        create_pipeline(patterns="match all noun-phrases please")
+
+
+@pytest.mark.parametrize("model", ["blank", "en", "invalid_name"])
+def test_create_pipeline_model_failure(model):
+    """Failed initialization: raising OSError on invalid model name."""
+    with pytest.raises(OSError):
+        create_pipeline(model=model)

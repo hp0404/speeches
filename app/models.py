@@ -12,7 +12,7 @@ from sqlmodel import Field, Relationship, SQLModel
 
 
 def custom_uuid() -> uuid.UUID:
-    """Generate UUID without leading zeros."""
+    """Generates UUID without leading zeros."""
     # Note: Work around UUIDs with leading zeros:
     # https://github.com/tiangolo/sqlmodel/issues/25
     val = uuid.uuid4()
@@ -77,7 +77,10 @@ class Texts(SQLModel, table=True):
 
 
 class ResponseFeatures(SQLModel):
-    """Response Feature model without document & feature ids."""
+    """Response Feature model without document & feature ids.
+
+    Note: it is also used as a response model for a generic POST request.
+    """
 
     feature_type: str
     feature_label: str
@@ -104,7 +107,7 @@ class Features(ResponseFeatures, table=True):
 
 # SQLModels
 class ParsedText(SQLModel):
-    """Input fields that POST /speeches/ endpoint expects."""
+    """Payload that POST /speeches/ endpoint expects."""
 
     title: str
     text: str
@@ -129,20 +132,26 @@ class ResponseMTF(ResponseMetadata):
 
     text: str
     # using Optional to levearage response_model_exclude_none
-    # to just omit 'features' fields from the response
+    # to omit 'features' fields from the response data
     # when features were not requested
     features: typing.Optional[typing.List[Features]] = None
 
 
 # /features/
 class FeaturesTypes(str, enum.Enum):
-    """Expected feature types."""
+    """Expected feature types.
+
+    Note: might be changed in the future as it is only
+    a hint for a documentation reader -- the features
+    table columns are not of ENUM type so the values
+    might be different.
+    """
 
     NE = "NE"
     NP = "NP"
 
 
 class FeaturesPayload(SQLModel):
-    """Input fields that POST /features/ endpoint expects."""
+    """Payload that POST /features/ endpoint expects."""
 
     text: str

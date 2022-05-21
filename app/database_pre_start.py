@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""This module contains prestart workflow that checks if
+"""This module contains prestart script that checks if
 the database is awake and running."""
 import logging
 from typing import Final

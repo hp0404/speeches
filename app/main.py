@@ -43,5 +43,5 @@ app.include_router(notifications.router, dependencies=dependencies)
 
 @app.get("/", include_in_schema=False)
 def docs_redirect() -> RedirectResponse:
-    """Default redirect."""
+    """Redirects to /docs page by default."""
     return RedirectResponse(url="/docs")

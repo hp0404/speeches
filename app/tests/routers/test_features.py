@@ -24,7 +24,7 @@ VALIDATION_ERROR = {
 def test_read_features_by_document_invalid_uuid(
     client, invalid_id, expected_status, expected_response
 ):
-    """Input id is invalid."""
+    """Failed request: input id is invalid (did not pass validation)."""
     response = client.get(
         f"/features/{invalid_id}",
         headers={"Authorization": "Bearer foobar"},
@@ -34,7 +34,7 @@ def test_read_features_by_document_invalid_uuid(
 
 
 def test_read_features_by_document_document_not_found(client, missing_document):
-    """Document not found."""
+    """Failed request: input id is valid but not found (passed validation)."""
     response = client.get(
         f"/features/{missing_document}",
         headers={"Authorization": "Bearer foobar"},
@@ -44,7 +44,7 @@ def test_read_features_by_document_document_not_found(client, missing_document):
 
 
 def test_read_features_by_document_document_found(client, uuids):
-    """Document was found."""
+    """Successful request: input id is valid and found."""
     response = client.get(
         f"/features/{uuids[1]}", headers={"Authorization": "Bearer foobar"}
     )
@@ -56,19 +56,20 @@ def test_read_features_by_document_document_found(client, uuids):
 
 
 def test_read_features_by_document_document_found_limit_success(client, uuids):
-    """Document was found, successfully limited feature types to NE."""
+    """Successful request: input id is valid and found, results are limited to
+    requested feature_type."""
     response = client.get(
         f"/features/{uuids[1]}?feature_type=NE",
         headers={"Authorization": "Bearer foobar"},
     )
     assert response.status_code == 200
     assert len(response.json()) == 2
-    # the request returned only NE types
     assert all(item["feature_type"] == "NE" for item in response.json())
 
 
 def test_read_features_by_document_document_found_limit_failure(client, uuids):
-    """Document was found, but there were no features accossiated with it."""
+    """Failed request: input id is valid and found, results are limited to
+    requested feature_type, but there are no matches."""
     response = client.get(
         f"/features/{uuids[0]}?feature_type=NP",
         headers={"Authorization": "Bearer foobar"},
@@ -135,7 +136,8 @@ def test_read_features_by_document_document_found_limit_failure(client, uuids):
     ],
 )
 def test_extract_features_from_text_success(client, payload, expected_response):
-    """Test ML"""
+    """Successful feature extraction: features are extracted without being inserted
+    into the database."""
     response = client.post(
         "/features/", json=payload, headers={"Authorization": "Bearer foobar"}
     )
@@ -143,7 +145,7 @@ def test_extract_features_from_text_success(client, payload, expected_response):
 
 
 def test_extract_features_from_text_failure(client):
-    """Test ML on meaningless text"""
+    """Failed feature extraction: features are not found within the text."""
     payload_without_features = {"text": "Отправить текст"}
     response = client.post(
         "/features/",

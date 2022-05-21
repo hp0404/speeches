@@ -9,7 +9,7 @@ NOTIFICATION = {"detail": "Notification sent in the background"}
 
 
 class MockMessage:
-    """Custom class that will override emails.Message
+    """Custom class that will override emails.Message that is being
     called from send_email function."""
 
     def __init__(self, subject, html, mail_from):
@@ -18,7 +18,7 @@ class MockMessage:
         self.mail_from = mail_from
 
     def send(self, to, render, smtp):
-        """Send method that will override emails.backend.response.SMTPResponse."""
+        """Overrides emails.backend.response.SMTPResponse."""
         response = emails.backend.response.SMTPResponse()
         response.smtp_options = smtp
         response.to_addrs = [to]
@@ -29,7 +29,7 @@ class MockMessage:
 
 
 def test_send_email_success(monkeypatch):
-    """Send mail successfully."""
+    """Successful request: the message (email) has been sent."""
     monkeypatch.setattr("emails.Message", MockMessage)
     settings = get_settings()
     response = send_email(email_to=EMAIL_TO, settings=settings)
@@ -39,8 +39,7 @@ def test_send_email_success(monkeypatch):
 
 
 def test_send_email_emails_disabled_failure():
-    """Make sure send_email raises AssertionError when
-    EMAILS_ENABLED is set to False"""
+    """Failed request: raising AssertionError on EMAILS_ENABLED set to False."""
     settings = get_settings()
     settings.EMAILS_ENABLED = False
     with pytest.raises(AssertionError):
@@ -55,7 +54,7 @@ def test_send_email_emails_disabled_failure():
     ],
 )
 def test_send_email_smtp_options(monkeypatch, tls, password, expected_response):
-    """Make sure the function builds smtp_options correctly."""
+    """Successful request: send_email function builds smtp_options correctly."""
     monkeypatch.setattr("emails.Message", MockMessage)
 
     settings = get_settings()
@@ -67,7 +66,7 @@ def test_send_email_smtp_options(monkeypatch, tls, password, expected_response):
 
 
 def test_send_notification(client, monkeypatch):
-    """Sends an email in the background."""
+    """Successful request: background tasks respond with expected message."""
     monkeypatch.setattr("emails.Message", MockMessage)
     response = client.post(
         f"/send-notification/{EMAIL_TO}",

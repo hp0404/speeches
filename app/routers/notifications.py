@@ -18,7 +18,8 @@ def send_email(
     html_template: str = "",
     environment: typing.Optional[typing.Dict[str, typing.Any]] = None,
 ) -> emails.backend.response.SMTPResponse:
-    """Generic utility function that builds and sends template messages."""
+    """Builds and sends template messages taking care of constructing smtp options,
+    rendering jinja templates, and sending messages."""
     assert settings.EMAILS_ENABLED, "no provided configuration for email variables"
     message = emails.Message(
         subject=JinjaTemplate(subject_template),
@@ -45,7 +46,12 @@ async def send_notification(
     background_tasks: BackgroundTasks,
     settings: Settings = Depends(get_settings),
 ):
-    """Sends generic message updating on the status of cronjob workflow."""
+    """Sends email in the background updating user on the status of cronjob workflow.
+
+    Note: this is a lightweight wrapper around send_email function that
+    adds send_email call to a background task and returns message saying
+    the message will be sent shortly.
+    """
     background_tasks.add_task(
         send_email,
         settings=settings,

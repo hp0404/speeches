@@ -14,7 +14,8 @@ def test_auth_success(client):
 
 
 def test_auth_failure_no_headers(client):
-    """'Not authenticated' response when no headers are provided."""
+    """Failed request with 'Not authenticated' response:
+    no headers are provided."""
     response = client.get("/speeches/")
     assert response.status_code == 401
     assert response.json() == NOT_AUTHENTICATED
@@ -22,7 +23,8 @@ def test_auth_failure_no_headers(client):
 
 @pytest.mark.parametrize("expected_token", ["bar", "foo", ""])
 def test_auth_failure_incorrect_token(client, expected_token):
-    """'Invalid authentication credentials' response when invalid token is provided."""
+    """Failed request with 'Invalid authentication credentials' response:
+    invalid token is provided."""
     response = client.get(
         "/speeches/",
         headers={"Authorization": f"Bearer {expected_token}"},

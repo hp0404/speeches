@@ -36,11 +36,12 @@ def read_speeches(
 
 @router.post("/", include_in_schema=False, response_model=typing.Dict[str, str])
 def create_speeches(payload: ParsedText, session: Session = Depends(get_session)):
-    """Creates speeches.
+    """Creates new entries.
 
-    It does so by moving payload fields to corresponding tables and
-    calling the ML worflow. This is a hidden endpoint that is only
-    exposed to the cronjob."""
+    Note: It does so by moving payload fields to corresponding tables and
+    calling the ML worflow; this is a hidden endpoint that is only
+    exposed to the cronjob.
+    """
     metadata = Metadata(
         title=payload.title,
         date=payload.date,
@@ -63,6 +64,7 @@ def delete_speech_by_id(
     id: uuid.UUID,  # pylint: disable=redefined-builtin,invalid-name
     session: Session = Depends(get_session),
 ):
+    """Deletes all related entries (parent and its children) by id."""
     data = session.get(Metadata, id)
     if not data:
         raise HTTPException(status_code=404, detail="Document not found")
@@ -77,7 +79,11 @@ def read_speech_by_id(
     include_features: bool = False,
     session: Session = Depends(get_session),
 ):
-    """Reads speeches."""
+    """Reads speeches.
+
+    Note: the response might also include text or features fields
+    depending on the include_features parameter.
+    """
     metadata = session.get(Metadata, id)
     if not metadata:
         raise HTTPException(status_code=404, detail="Document not found")

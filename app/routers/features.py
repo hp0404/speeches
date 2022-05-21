@@ -21,7 +21,10 @@ router = APIRouter(prefix="/features", tags=["features"])
 
 @router.post("/", response_model=typing.List[ResponseFeatures])
 def extract_features_from_text(data: FeaturesPayload):
-    """Runs feature extraction pipeline without writing to the database."""
+    """Runs feature extraction pipeline
+
+    Note: does not write to the database.
+    """
     features = []
     data_stream = [(data.text, custom_uuid())]
     for feature in feature_extractor.stream(data_stream):

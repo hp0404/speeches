@@ -33,7 +33,7 @@ def force_path(s: Union[str, Path]) -> Path:
 
 
 class ML:
-    """Extracts noun-phrases & named-entities."""
+    """Base class that will handle ML-related utilities"""
 
     def __init__(
         self, nlp: spacy.language.Language, patterns: Union[str, Path]

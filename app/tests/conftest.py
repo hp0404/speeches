@@ -8,6 +8,8 @@ from app.main import app
 
 
 def get_settings_override():
+    """Overrides default get_settings behavior allowing
+    testclient to use generic token to authenticate."""
     settings = get_settings()
     settings.SECRET_TOKEN = "foobar"
     return settings
@@ -15,12 +17,18 @@ def get_settings_override():
 
 @pytest.fixture(scope="module")
 def missing_document():
-    """Random valid UUID not found in the database."""
+    """Random valid UUID not found in the database.
+
+    Note: the idea here is to use a valid UUID
+    that will not raise an exception on validation
+    but will not be found in the database as well.
+    """
     return "ab124f2d-1111-1111-1111-a380117c3bb9"
 
 
 @pytest.fixture(scope="session")
 def session():
+    """Reusable session."""
     settings = get_settings_override()
     engine = create_engine(str(settings.DATABASE_URI))
     SQLModel.metadata.drop_all(engine)
@@ -32,6 +40,9 @@ def session():
 @pytest.fixture(scope="session")
 def client(session):
     def get_session_override():
+        """Overrides default get_session behavior
+        allowing testclient to use a session connected
+        to a test database."""
         return session
 
     app.dependency_overrides[get_session] = get_session_override
@@ -43,6 +54,7 @@ def client(session):
 
 @pytest.fixture(scope="session")
 def sample_data():
+    """Generic payload."""
     return [
         {
             "title": "Новость 1",
@@ -61,6 +73,7 @@ def sample_data():
 
 @pytest.fixture(scope="session")
 def uuids(client, sample_data):
+    """List of UUIDs that are added to the database on start."""
     # building sample database
     added_uuids = []
     for item in sample_data:
@@ -68,8 +81,10 @@ def uuids(client, sample_data):
             "/speeches/", json=item, headers={"Authorization": "Bearer foobar"}
         )
         added_uuids.append(response.json()["id"])
+
     # use for GET requests
     yield added_uuids
+
     # cleaning up
     for uuid in added_uuids:
         response = client.delete(
