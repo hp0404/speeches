@@ -1,5 +1,5 @@
-import pytest
 import emails
+import pytest
 
 from app.core.config import get_settings
 from app.routers.notifications import send_email

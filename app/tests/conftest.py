@@ -1,6 +1,5 @@
 import pytest
 from fastapi.testclient import TestClient
-from pydantic import PostgresDsn
 from sqlmodel import Session, SQLModel, create_engine
 
 from app.core.config import get_settings
