@@ -22,7 +22,7 @@ def test_create_pipeline_model_failure(model):
         ml = create_pipeline(model=model)
 
 
-def test_create_pipeline_patterns_file():
+def test_create_pipeline_patterns_dir():
     """Making sure that internal build_phrase_matcher method can
     handle directory input."""
     ml = create_pipeline(patterns=patterns_directory)
