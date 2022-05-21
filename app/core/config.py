@@ -27,7 +27,7 @@ class Settings(BaseSettings):
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
     POSTGRES_DB: str
-    DATABASE_URI: Optional[Union[str, PostgresDsn]] = None
+    DATABASE_URI: Optional[PostgresDsn] = None
 
     @validator("DATABASE_URI", pre=True)
     def assemble_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
