@@ -1,1 +1,1 @@
-pytest --cov-report html --cov=app app/tests
+pytest --cov-report html --cov=app
