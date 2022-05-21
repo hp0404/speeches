@@ -32,7 +32,7 @@ jobs:
         PROJECT_NAME: fastapi-sqlmodel-testing
         DESCRIPTION: REST API that helps you...
         SECRET_TOKEN: ${{ secrets.SECRET_TOKEN }}
-        BACKEND_CORS_ORIGINS: ${{ secrets.BACKEND_CORS_ORIGINS }}
+        BACKEND_CORS_ORIGINS: ["http://localhost:8000", "https://localhost:8000", "http://localhost", "https://localhost"]
 
         # using test-db creds to avoid adjusting code
         POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
