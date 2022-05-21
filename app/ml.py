@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """This module contains ML-related utilities."""
 import json
-from uuid import UUID
 from pathlib import Path
-from typing import Any, Dict, List, Union, Iterator, Tuple, NamedTuple
+from typing import Any, Dict, Iterator, List, NamedTuple, Optional, Tuple, Union
+from uuid import UUID
 
 import spacy
 
@@ -98,7 +98,9 @@ class ML:
             yield from self._stream_noun_phrases(doc, uuid)
 
 
-def create_pipeline(model: str = "ru_core_news_sm", patterns=None) -> ML:
+def create_pipeline(
+    model: str = "ru_core_news_sm", patterns: Optional[Path] = None
+) -> ML:
     """Initializes ML pipeline."""
     nlp = spacy.load(model)
     if patterns is None:
