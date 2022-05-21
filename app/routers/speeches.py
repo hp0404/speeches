@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
 """This module contains /speeches/ router."""
-import uuid
 import typing
+import uuid
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, desc, select
 
+from app.database import get_session
 from app.ml import feature_extractor
 from app.models import (
-    ParsedText,
-    Metadata,
-    Texts,
     Features,
+    Metadata,
+    ParsedText,
     ResponseMetadata,
     ResponseMTF,
+    Texts,
 )
-from app.database import get_session
 
 router = APIRouter(prefix="/speeches", tags=["speeches"])
 

@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import pytest
+
 from app.ml import create_pipeline
 
 patterns_directory = (

@@ -1,15 +1,20 @@
 # -*- coding: utf-8 -*-
 """This module contains /features/ router."""
-import uuid
 import typing
+import uuid
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
-from app.ml import feature_extractor
-from app.models import custom_uuid
-from app.models import Features, FeaturesTypes, FeaturesPayload, ResponseFeatures
 from app.database import get_session
+from app.ml import feature_extractor
+from app.models import (
+    Features,
+    FeaturesPayload,
+    FeaturesTypes,
+    ResponseFeatures,
+    custom_uuid,
+)
 
 router = APIRouter(prefix="/features", tags=["features"])
 

@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 """This module contains main FastAPI instance & adds tags metadata."""
-from fastapi import FastAPI, Depends
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import RedirectResponse
 
 from app.auth import auth_request
-from app.routers import speeches, features, notifications
 from app.core.config import get_settings
+from app.routers import features, notifications, speeches
 
 settings = get_settings()
 tags_metadata = [

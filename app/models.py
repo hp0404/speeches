@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 """This module contains SQLModel's models."""
-import enum
-import uuid
-import typing
 import datetime
+import enum
+import typing
+import uuid
 
 from pydantic import HttpUrl
-from sqlmodel import Field, SQLModel, Relationship
 from sqlalchemy import Column, Integer
 from sqlalchemy.dialects import postgresql
+from sqlmodel import Field, Relationship, SQLModel
 
 
 def custom_uuid() -> uuid.UUID:

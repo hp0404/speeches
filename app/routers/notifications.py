@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """This module contains /send-notification/ router."""
-import typing
 import logging
+import typing
 
 import emails  # type: ignore
 from emails.template import JinjaTemplate  # type: ignore
-from fastapi import BackgroundTasks, APIRouter, Depends
+from fastapi import APIRouter, BackgroundTasks, Depends
 
 from app.core.config import Settings, get_settings
 
