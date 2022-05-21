@@ -48,8 +48,8 @@ jobs:
         SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
         EMAILS_FROM_EMAIL: ${{ secrets.EMAILS_FROM_EMAIL }}
       run: |
-        pytest app/tests/
-        pytest --cov-report= --cov=app/tests/
+        pytest
+        pytest --cov-report= --cov=app
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1.2.1
       with:
