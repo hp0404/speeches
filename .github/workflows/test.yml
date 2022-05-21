@@ -41,9 +41,9 @@ jobs:
         POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
         
         # SMTP
-        SMTP_TLS: ${{ secrets.SMTP_TLS }}
-        SMTP_PORT: ${{ secrets.SMTP_PORT }}
-        SMTP_HOST: ${{ secrets.SMTP_HOST }}
+        SMTP_TLS: true
+        SMTP_PORT: 587
+        SMTP_HOST: 'smtp.gmail.com'
         SMTP_USER: ${{ secrets.SMTP_USER }}
         SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
         EMAILS_FROM_EMAIL: ${{ secrets.EMAILS_FROM_EMAIL }}
