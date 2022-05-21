@@ -8,6 +8,12 @@ from app.database import get_session
 from app.main import app
 
 
+def get_settings_override():
+    settings = get_settings()
+    settings.SECRET_TOKEN = "foobar"
+    return settings
+
+
 @pytest.fixture(scope="module")
 def missing_document():
     """Random valid UUID not found in the database."""
@@ -16,17 +22,8 @@ def missing_document():
 
 @pytest.fixture(scope="session")
 def session():
-    """
-    TODO: build custom settings and replace DB URI instead of building PostgresDsn
-    """
-    SQLALCHEMY_DATABASE_URL = PostgresDsn.build(
-        scheme="postgresql",
-        user="postgres",
-        password="example",
-        host="localhost:5432",
-        path="/postgres_test",
-    )
-    engine = create_engine(str(SQLALCHEMY_DATABASE_URL))
+    settings = get_settings_override()
+    engine = create_engine(str(settings.DATABASE_URI))
     SQLModel.metadata.drop_all(engine)
     SQLModel.metadata.create_all(engine)
     with Session(engine) as session:
@@ -37,11 +34,6 @@ def session():
 def client(session):
     def get_session_override():
         return session
-
-    def get_settings_override():
-        settings = get_settings()
-        settings.SECRET_TOKEN = "foobar"
-        return settings
 
     app.dependency_overrides[get_session] = get_session_override
     app.dependency_overrides[get_settings] = get_settings_override
