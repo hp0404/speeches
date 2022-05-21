@@ -25,12 +25,19 @@ def read_pattern(path: Path) -> List[Rule]:
     return [Rule(label=p["label"], pattern=p["pattern"]) for p in content]
 
 
+def force_path(s: Union[str, Path]) -> Path:
+    """Casts input to Path."""
+    if isinstance(s, Path):
+        return s
+    return Path(s).resolve()
+
+
 class ML:
     """Extracts noun-phrases & named-entities."""
 
     def __init__(self, nlp: spacy.language.Language, patterns: Path) -> None:
         self.nlp = nlp
-        self.patterns_location = patterns
+        self.patterns_location = force_path(patterns)
         self.phrase_matcher = self.build_phrase_matcher()
 
     def build_phrase_matcher(self) -> spacy.matcher.Matcher:
@@ -91,10 +98,11 @@ class ML:
             yield from self._stream_noun_phrases(doc, uuid)
 
 
-def create_pipeline() -> ML:
+def create_pipeline(model: str = "ru_core_news_sm", patterns=None) -> ML:
     """Initializes ML pipeline."""
-    nlp = spacy.load("ru_core_news_sm")
-    patterns = Path(__file__).resolve().parent.parent / "assets" / "patterns"
+    nlp = spacy.load(model)
+    if patterns is None:
+        patterns = Path(__file__).resolve().parent.parent / "assets" / "patterns"
     return ML(nlp, patterns=patterns)
 
 
