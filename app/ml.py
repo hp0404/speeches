@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """This module contains ML-related utilities."""
 import json
-from uuid import UUID
 from pathlib import Path
-from typing import Any, Dict, List, Union, Iterator, Tuple, NamedTuple
+from typing import Any, Dict, Iterator, List, NamedTuple, Optional, Tuple, Union
+from uuid import UUID
 
 import spacy
 
@@ -25,12 +25,21 @@ def read_pattern(path: Path) -> List[Rule]:
     return [Rule(label=p["label"], pattern=p["pattern"]) for p in content]
 
 
-class ML:
-    """Extracts noun-phrases & named-entities."""
+def force_path(s: Union[str, Path]) -> Path:
+    """Casts input to Path."""
+    if isinstance(s, Path):
+        return s
+    return Path(s).resolve()
 
-    def __init__(self, nlp: spacy.language.Language, patterns: Path) -> None:
+
+class ML:
+    """Base class that will handle ML-related utilities"""
+
+    def __init__(
+        self, nlp: spacy.language.Language, patterns: Union[str, Path]
+    ) -> None:
         self.nlp = nlp
-        self.patterns_location = patterns
+        self.patterns_location = force_path(patterns)
         self.phrase_matcher = self.build_phrase_matcher()
 
     def build_phrase_matcher(self) -> spacy.matcher.Matcher:
@@ -91,10 +100,13 @@ class ML:
             yield from self._stream_noun_phrases(doc, uuid)
 
 
-def create_pipeline() -> ML:
+def create_pipeline(
+    model: str = "ru_core_news_sm", patterns: Optional[Path] = None
+) -> ML:
     """Initializes ML pipeline."""
-    nlp = spacy.load("ru_core_news_sm")
-    patterns = Path(__file__).resolve().parent.parent / "assets" / "patterns"
+    nlp = spacy.load(model)
+    if patterns is None:
+        patterns = Path(__file__).resolve().parent.parent / "assets" / "patterns"
     return ML(nlp, patterns=patterns)
 
 

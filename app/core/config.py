@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """This module contains BaseSettings config."""
 from typing import Any, Dict, List, Optional, Union
-from pydantic import AnyHttpUrl, BaseSettings, EmailStr, PostgresDsn, validator
+
+from pydantic import BaseSettings, EmailStr, PostgresDsn, validator
 
 
 class Settings(BaseSettings):
@@ -10,7 +11,9 @@ class Settings(BaseSettings):
     PROJECT_NAME: str
     DESCRIPTION: str
     SECRET_TOKEN: str
-    BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
+    # workaround for environment variables
+    # https://github.com/samuelcolvin/pydantic/issues/1458#issuecomment-789051576
+    BACKEND_CORS_ORIGINS: Union[str, List[str]] = []
 
     @validator("BACKEND_CORS_ORIGINS", pre=True)
     def assemble_cors_origins(cls, v: Union[str, List[str]]) -> Union[List[str], str]:
@@ -24,7 +27,7 @@ class Settings(BaseSettings):
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
     POSTGRES_DB: str
-    DATABASE_URI: Optional[PostgresDsn] = None
+    DATABASE_URI: Optional[Union[str, PostgresDsn]] = None
 
     @validator("DATABASE_URI", pre=True)
     def assemble_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
@@ -43,7 +46,7 @@ class Settings(BaseSettings):
     SMTP_HOST: Optional[str] = None
     SMTP_USER: Optional[str] = None
     SMTP_PASSWORD: Optional[str] = None
-    EMAILS_FROM_EMAIL: Optional[EmailStr] = None
+    EMAILS_FROM_EMAIL: Optional[Union[str, EmailStr]] = None
     EMAILS_FROM_NAME: Optional[str] = None
 
     @validator("EMAILS_FROM_NAME")
@@ -67,4 +70,6 @@ class Settings(BaseSettings):
         env_file = ".env"
 
 
-settings = Settings()
+def get_settings() -> Settings:
+    """Creates settings - used for dependency injection."""
+    return Settings()

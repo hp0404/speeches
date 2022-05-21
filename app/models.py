@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
 """This module contains SQLModel's models."""
-import enum
-import uuid
-import typing
 import datetime
+import enum
+import typing
+import uuid
 
 from pydantic import HttpUrl
-from sqlmodel import Field, SQLModel, Relationship
 from sqlalchemy import Column, Integer
 from sqlalchemy.dialects import postgresql
+from sqlmodel import Field, Relationship, SQLModel
 
 
 def custom_uuid() -> uuid.UUID:
-    """Generate UUID without leading zeros."""
+    """Generates UUID without leading zeros."""
     # Note: Work around UUIDs with leading zeros:
     # https://github.com/tiangolo/sqlmodel/issues/25
     val = uuid.uuid4()
@@ -45,12 +45,16 @@ class Metadata(SQLModel, table=True):
         back_populates="meta",
         sa_relationship_kwargs={
             "primaryjoin": "Metadata.id==Features.document_id",
+            "cascade": "all,delete,delete-orphan",
         },
     )
     # one-to-one
     text: "Texts" = Relationship(
         back_populates="meta",
-        sa_relationship_kwargs={"uselist": False},
+        sa_relationship_kwargs={
+            "uselist": False,
+            "cascade": "all,delete,delete-orphan",
+        },
     )
 
 
@@ -72,15 +76,12 @@ class Texts(SQLModel, table=True):
     )
 
 
-class Features(SQLModel, table=True):
-    """public.features schema."""
+class ResponseFeatures(SQLModel):
+    """Response Feature model without document & feature ids.
 
-    feature_id: typing.Optional[int] = Field(default=None, primary_key=True, index=True)
-    document_id: typing.Optional[uuid.UUID] = Field(
-        nullable=False,
-        default=None,
-        foreign_key="metadata.id",
-    )
+    Note: it is also used as a response model for a generic POST request.
+    """
+
     feature_type: str
     feature_label: str
     match: str
@@ -90,13 +91,23 @@ class Features(SQLModel, table=True):
     # https://github.com/tiangolo/sqlmodel/issues/178#issuecomment-1044569342
     location: typing.List[int] = Field(sa_column=Column(postgresql.ARRAY(Integer())))
 
+
+class Features(ResponseFeatures, table=True):
+    """public.features schema."""
+
+    feature_id: typing.Optional[int] = Field(default=None, primary_key=True, index=True)
+    document_id: typing.Optional[uuid.UUID] = Field(
+        nullable=False,
+        default=None,
+        foreign_key="metadata.id",
+    )
     # Relationship
     meta: Metadata = Relationship(back_populates="features")
 
 
 # SQLModels
 class ParsedText(SQLModel):
-    """Input fields that POST /speeches/ endpoint expects."""
+    """Payload that POST /speeches/ endpoint expects."""
 
     title: str
     text: str
@@ -121,20 +132,26 @@ class ResponseMTF(ResponseMetadata):
 
     text: str
     # using Optional to levearage response_model_exclude_none
-    # to just omit 'features' fields from the response
+    # to omit 'features' fields from the response data
     # when features were not requested
     features: typing.Optional[typing.List[Features]] = None
 
 
 # /features/
 class FeaturesTypes(str, enum.Enum):
-    """Expected feature types."""
+    """Expected feature types.
+
+    Note: might be changed in the future as it is only
+    a hint for a documentation reader -- the features
+    table columns are not of ENUM type so the values
+    might be different.
+    """
 
     NE = "NE"
     NP = "NP"
 
 
 class FeaturesPayload(SQLModel):
-    """Input fields that POST /features/ endpoint expects."""
+    """Payload that POST /features/ endpoint expects."""
 
     text: str

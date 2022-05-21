@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""This module contains prestart workflow that checks if
+"""This module contains prestart script that checks if
 the database is awake and running."""
 import logging
 from typing import Final
@@ -7,7 +7,7 @@ from typing import Final
 from sqlmodel import Session, select
 from tenacity import after_log, before_log, retry, stop_after_attempt, wait_fixed
 
-from app.database import engine
+from app.database import get_engine
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -25,6 +25,7 @@ WAIT_SECONDS: Final = 1
 def init() -> None:
     """Tries to create session to check if database is awake."""
     try:
+        engine = get_engine()
         with Session(engine) as session:
             session.exec(select(1))
     except Exception as generic_exception:

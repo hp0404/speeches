@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
 """This module contains /speeches/ router."""
-import uuid
 import typing
+import uuid
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, desc, select
 
+from app.database import get_session
 from app.ml import feature_extractor
 from app.models import (
-    ParsedText,
-    Metadata,
-    Texts,
     Features,
+    Metadata,
+    ParsedText,
     ResponseMetadata,
     ResponseMTF,
+    Texts,
 )
-from app.database import get_session
 
 router = APIRouter(prefix="/speeches", tags=["speeches"])
 
@@ -34,13 +34,14 @@ def read_speeches(
     return session.exec(query).all()
 
 
-@router.post("/", include_in_schema=False, response_model=typing.Dict[str, bool])
+@router.post("/", include_in_schema=False, response_model=typing.Dict[str, str])
 def create_speeches(payload: ParsedText, session: Session = Depends(get_session)):
-    """Creates speeches.
+    """Creates new entries.
 
-    It does so by moving payload fields to corresponding tables and
-    calling the ML worflow. This is a hidden endpoint that is only
-    exposed to the cronjob."""
+    Note: It does so by moving payload fields to corresponding tables and
+    calling the ML worflow; this is a hidden endpoint that is only
+    exposed to the cronjob.
+    """
     metadata = Metadata(
         title=payload.title,
         date=payload.date,
@@ -55,7 +56,21 @@ def create_speeches(payload: ParsedText, session: Session = Depends(get_session)
         metadata.features.append(found_feature)  # pylint: disable=no-member
     session.add(metadata)
     session.commit()
-    return {"ok": True}
+    return {"id": str(metadata.id)}
+
+
+@router.delete("/{id}")
+def delete_speech_by_id(
+    id: uuid.UUID,  # pylint: disable=redefined-builtin,invalid-name
+    session: Session = Depends(get_session),
+):
+    """Deletes all related entries (parent and its children) by id."""
+    data = session.get(Metadata, id)
+    if not data:
+        raise HTTPException(status_code=404, detail="Document not found")
+    session.delete(data)
+    session.commit()
+    return {"detail": f"deleted id={id}"}
 
 
 @router.get("/{id}", response_model=ResponseMTF, response_model_exclude_none=True)
@@ -64,7 +79,11 @@ def read_speech_by_id(
     include_features: bool = False,
     session: Session = Depends(get_session),
 ):
-    """Reads speeches."""
+    """Reads speeches.
+
+    Note: the response might also include text or features fields
+    depending on the include_features parameter.
+    """
     metadata = session.get(Metadata, id)
     if not metadata:
         raise HTTPException(status_code=404, detail="Document not found")
