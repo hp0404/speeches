@@ -31,14 +31,22 @@ jobs:
       env:
         PROJECT_NAME: fastapi-sqlmodel-testing
         DESCRIPTION: REST API that helps you...
-        SECRET_TOKEN: 123
-        BACKEND_CORS_ORIGINS: ${{ secrets.POSTGRES_USER }}
+        SECRET_TOKEN: ${{ secrets.SECRET_TOKEN }}
+        BACKEND_CORS_ORIGINS: ${{ secrets.BACKEND_CORS_ORIGINS }}
 
+        # using test-db creds to avoid adjusting code
         POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
         POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         POSTGRES_SERVER: ${{ secrets.POSTGRES_SERVER }}
         POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-
+        
+        # SMTP
+        SMTP_TLS: ${{ secrets.SMTP_TLS }}
+        SMTP_PORT: ${{ secrets.SMTP_PORT }}
+        SMTP_HOST: ${{ secrets.SMTP_HOST }}
+        SMTP_USER: ${{ secrets.SMTP_USER }}
+        SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+        EMAILS_FROM_EMAIL: ${{ secrets.EMAILS_FROM_EMAIL }}
       run: |
         pytest app/tests/
         pytest --cov-report= --cov=app/tests/
