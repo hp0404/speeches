@@ -25,7 +25,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install wheel
+        pip install wheel alembic
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Run tests
       env:
@@ -49,6 +49,7 @@ jobs:
         SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
         EMAILS_FROM_EMAIL: ${{ secrets.EMAILS_FROM_EMAIL }}
       run: |
+        alembic upgrade head
         pytest app/tests/
         pytest --cov-report= --cov=app/tests/
     - name: Upload coverage to Codecov
