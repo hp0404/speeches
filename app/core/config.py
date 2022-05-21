@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     SECRET_TOKEN: str
     # workaround for environment variables
     # https://github.com/samuelcolvin/pydantic/issues/1458#issuecomment-789051576
-    BACKEND_CORS_ORIGINS: Union[str, List[AnyHttpUrl]] = []
+    BACKEND_CORS_ORIGINS: Union[str, List[str]] = []
 
     @validator("BACKEND_CORS_ORIGINS", pre=True)
     def assemble_cors_origins(cls, v: Union[str, List[str]]) -> Union[List[str], str]:
@@ -46,7 +46,7 @@ class Settings(BaseSettings):
     SMTP_HOST: Optional[str] = None
     SMTP_USER: Optional[str] = None
     SMTP_PASSWORD: Optional[str] = None
-    EMAILS_FROM_EMAIL: Optional[EmailStr] = None
+    EMAILS_FROM_EMAIL: Optional[Union[str, EmailStr]] = None
     EMAILS_FROM_NAME: Optional[str] = None
 
     @validator("EMAILS_FROM_NAME")

@@ -39,6 +39,7 @@ jobs:
         POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         POSTGRES_SERVER: ${{ secrets.POSTGRES_SERVER }}
         POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+        DATABASE_URI: ${{ secrets.DATABASE_URI }}
         
         # SMTP
         SMTP_TLS: true
