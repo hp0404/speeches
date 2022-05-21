@@ -1,24 +1,22 @@
 import pytest
-from starlette import status
-from fastapi import Depends, HTTPException
 from fastapi.testclient import TestClient
 from pydantic import PostgresDsn
 from sqlmodel import Session, SQLModel, create_engine
 
 from app.core.config import get_settings
 from app.database import get_session
-from app.auth import auth_request, oauth2_scheme
 from app.main import app
 
 
 @pytest.fixture(scope="module")
 def missing_document():
+    """Random valid UUID not found in the database."""
     return "ab124f2d-1111-1111-1111-a380117c3bb9"
 
 
 @pytest.fixture(scope="session")
 def session():
-    """Fake session
+    """
     TODO: build custom settings and replace DB URI instead of building PostgresDsn
     """
     SQLALCHEMY_DATABASE_URL = PostgresDsn.build(
@@ -73,16 +71,16 @@ def sample_data():
 @pytest.fixture(scope="session")
 def uuids(client, sample_data):
     # building sample database
-    uuids = []
+    added_uuids = []
     for item in sample_data:
         response = client.post(
             "/speeches/", json=item, headers={"Authorization": "Bearer foobar"}
         )
-        uuids.append(response.json()["id"])
+        added_uuids.append(response.json()["id"])
     # use for GET requests
-    yield uuids
+    yield added_uuids
     # cleaning up
-    for uuid in uuids:
+    for uuid in added_uuids:
         response = client.delete(
             f"/speeches/{uuid}", headers={"Authorization": "Bearer foobar"}
         )

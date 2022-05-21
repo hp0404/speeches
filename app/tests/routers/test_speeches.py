@@ -53,36 +53,17 @@ def test_create_delete_speeches_success(client, sample_data):
         response = client.delete(
             f"/speeches/{uuid}", headers={"Authorization": "Bearer foobar"}
         )
-        response.status_code == 200
+        assert response.status_code == 200
         assert response.json() == {"detail": f"deleted id={uuid}"}
 
 
 def test_delete_speech_by_id_failure(client, missing_document):
-    """ """
+    """Make sure the response for non-existing document is correct."""
     response = client.delete(
         f"/speeches/{missing_document}", headers={"Authorization": "Bearer foobar"}
     )
     assert response.status_code == 404
     assert response.json() == DOCUMENT_NOT_FOUND
-
-
-def test_read_speeches(client, uuids):
-    """Read all speeches from a hidden endpoint."""
-    response = client.get("/speeches/", headers={"Authorization": "Bearer foobar"})
-    assert response.status_code == 200
-    data = response.json()
-    assert len(data) == 2
-    assert data[0]["title"] == "Новость 1"
-
-
-def test_read_speeches_offset_limit(client, uuids):
-    """Read speeches using offset & limit params."""
-    response = client.get(
-        "/speeches/?offset=1&limit=1", headers={"Authorization": "Bearer foobar"}
-    )
-    data = response.json()
-    assert len(data) == 1
-    assert data[0]["title"] == "Новость 2"
 
 
 def test_read_speech_by_id_success(client, uuids):
@@ -124,3 +105,22 @@ def test_read_speech_by_id_with_features(client, uuids):
     assert (
         data["text"] == "Германия задерживает поставки тяжелого вооружения для Украины"
     )
+
+
+def test_read_speeches(client):
+    """Read all speeches from a hidden endpoint."""
+    response = client.get("/speeches/", headers={"Authorization": "Bearer foobar"})
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data) == 2
+    assert data[0]["title"] == "Новость 1"
+
+
+def test_read_speeches_offset_limit(client):
+    """Read speeches using offset & limit params."""
+    response = client.get(
+        "/speeches/?offset=1&limit=1", headers={"Authorization": "Bearer foobar"}
+    )
+    data = response.json()
+    assert len(data) == 1
+    assert data[0]["title"] == "Новость 2"

@@ -143,7 +143,7 @@ def test_extract_features_from_text_success(client, payload, expected_response):
 
 
 def test_extract_features_from_text_failure(client):
-    """ """
+    """Test ML on meaningless text"""
     payload_without_features = {"text": "Отправить текст"}
     response = client.post(
         "/features/",
