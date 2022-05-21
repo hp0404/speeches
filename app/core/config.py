@@ -11,7 +11,9 @@ class Settings(BaseSettings):
     PROJECT_NAME: str
     DESCRIPTION: str
     SECRET_TOKEN: str
-    BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
+    # workaround for environment variables
+    # https://github.com/samuelcolvin/pydantic/issues/1458#issuecomment-789051576
+    BACKEND_CORS_ORIGINS: Union[str, List[AnyHttpUrl]] = []
 
     @validator("BACKEND_CORS_ORIGINS", pre=True)
     def assemble_cors_origins(cls, v: Union[str, List[str]]) -> Union[List[str], str]:
