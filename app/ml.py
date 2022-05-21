@@ -35,7 +35,9 @@ def force_path(s: Union[str, Path]) -> Path:
 class ML:
     """Extracts noun-phrases & named-entities."""
 
-    def __init__(self, nlp: spacy.language.Language, patterns: Path) -> None:
+    def __init__(
+        self, nlp: spacy.language.Language, patterns: Union[str, Path]
+    ) -> None:
         self.nlp = nlp
         self.patterns_location = force_path(patterns)
         self.phrase_matcher = self.build_phrase_matcher()
