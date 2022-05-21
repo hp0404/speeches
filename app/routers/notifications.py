@@ -56,4 +56,4 @@ async def send_notification(
         html_template="<p>The database has been updated...</p>",
         environment={"proj": settings.PROJECT_NAME},
     )
-    return {"message": "Notification sent in the background"}
+    return {"detail": "Notification sent in the background"}
