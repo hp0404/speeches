@@ -1,6 +1,8 @@
 # speeches
 
-This repository contains FastAPI & SQLModel API hosted on DigitalOcean's droplet.
+[![codecov](https://codecov.io/gh/hp0404/speeches/branch/master/graph/badge.svg?token=I2DM8IGJBU)](https://codecov.io/gh/hp0404/speeches)
+
+This repository contains FastAPI & SQLModel app hosted on DigitalOcean's droplet.
 
 ## Usage (local development)
 
