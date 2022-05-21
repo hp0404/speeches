@@ -1,6 +1,11 @@
 [run]
 omit = 
+    # Don't test database as I'm overriding engine & session
+    app/database.py
+    # Not part of the application
     app/database_pre_start.py
+    # Ignore empty files
+    */__init__.py
 
 [report]
 # Regexes for lines to exclude from consideration
