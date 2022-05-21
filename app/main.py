@@ -35,15 +35,10 @@ app.add_middleware(
 )
 # adding router dependencies separately to keep /docs accessible
 # otherwise would've set app-level dependecy
-app.include_router(
-    speeches.router, dependencies=[Depends(auth_request), Depends(get_settings)]
-)
-app.include_router(
-    features.router, dependencies=[Depends(auth_request), Depends(get_settings)]
-)
-app.include_router(
-    notifications.router, dependencies=[Depends(auth_request), Depends(get_settings)]
-)
+dependencies = [Depends(auth_request)]
+app.include_router(speeches.router, dependencies=dependencies)
+app.include_router(features.router, dependencies=dependencies)
+app.include_router(notifications.router, dependencies=dependencies)
 
 
 @app.get("/", include_in_schema=False)
