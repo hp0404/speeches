@@ -2,7 +2,7 @@
 """This module contains BaseSettings config."""
 from typing import Any, Dict, List, Optional, Union
 
-from pydantic import BaseSettings, EmailStr, PostgresDsn, validator, root_validator
+from pydantic import BaseSettings, EmailStr, PostgresDsn, root_validator, validator
 
 
 class Settings(BaseSettings):
