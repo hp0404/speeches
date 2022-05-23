@@ -7,6 +7,7 @@ from typing import Final
 from sqlmodel import Session, select
 from tenacity import after_log, before_log, retry, stop_after_attempt, wait_fixed
 
+from app.core.config import get_settings
 from app.database import get_engine
 
 logging.basicConfig(level=logging.INFO)
@@ -25,8 +26,8 @@ WAIT_SECONDS: Final = 1
 def init() -> None:
     """Tries to create session to check if database is awake."""
     try:
-        engine = get_engine()
-        with Session(engine) as session:
+        settings = get_settings()
+        with Session(get_engine(settings)) as session:
             session.exec(select(1))
     except Exception as generic_exception:
         logger.error(generic_exception)

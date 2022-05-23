@@ -17,7 +17,7 @@ def custom_uuid() -> uuid.UUID:
     # https://github.com/tiangolo/sqlmodel/issues/25
     val = uuid.uuid4()
     while val.hex[0] == "0":
-        val = uuid.uuid4()
+        val = uuid.uuid4()  # pragma: no cover
     return val
 
 

@@ -2,7 +2,7 @@
 """This module contains BaseSettings config."""
 from typing import Any, Dict, List, Optional, Union
 
-from pydantic import BaseSettings, EmailStr, PostgresDsn, validator
+from pydantic import BaseSettings, EmailStr, PostgresDsn, root_validator, validator
 
 
 class Settings(BaseSettings):
@@ -27,19 +27,7 @@ class Settings(BaseSettings):
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
     POSTGRES_DB: str
-    DATABASE_URI: Optional[Union[str, PostgresDsn]] = None
-
-    @validator("DATABASE_URI", pre=True)
-    def assemble_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
-        if isinstance(v, str):
-            return v
-        return PostgresDsn.build(
-            scheme="postgresql",
-            user=values.get("POSTGRES_USER"),
-            password=values.get("POSTGRES_PASSWORD"),
-            host=values.get("POSTGRES_SERVER"),
-            path=f"/{values.get('POSTGRES_DB') or ''}",
-        )
+    DATABASE_URI: Optional[PostgresDsn] = None
 
     SMTP_TLS: bool = True
     SMTP_PORT: Optional[int] = None
@@ -57,15 +45,26 @@ class Settings(BaseSettings):
 
     EMAILS_ENABLED: bool = False
 
-    @validator("EMAILS_ENABLED", pre=True)
-    def get_emails_enabled(cls, v: bool, values: Dict[str, Any]) -> bool:
-        return bool(
+    @root_validator
+    def assemble_db_connection_and_get_emails_enabled(
+        cls, values: Dict[str, Any]
+    ) -> Any:
+        values["DATABASE_URI"] = PostgresDsn.build(
+            scheme="postgresql",
+            user=values.get("POSTGRES_USER"),
+            password=values.get("POSTGRES_PASSWORD"),
+            host=values.get("POSTGRES_SERVER"),
+            path=f"/{values.get('POSTGRES_DB') or ''}",
+        )
+        values["EMAILS_ENABLED"] = bool(
             values.get("SMTP_HOST")
             and values.get("SMTP_PORT")
             and values.get("EMAILS_FROM_EMAIL")
         )
+        return values
 
     class Config:
+        validate_assignment = True
         case_sensitive = True
         env_file = ".env"
 

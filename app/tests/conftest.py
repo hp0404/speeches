@@ -1,18 +1,10 @@
 import pytest
 from fastapi.testclient import TestClient
-from sqlmodel import Session, SQLModel, create_engine
+from sqlmodel import Session, SQLModel
 
 from app.core.config import get_settings
-from app.database import get_session
+from app.database import get_engine, get_session
 from app.main import app
-
-
-def get_settings_override():
-    """Overrides default get_settings behavior allowing
-    testclient to use generic token to authenticate."""
-    settings = get_settings()
-    settings.SECRET_TOKEN = "foobar"
-    return settings
 
 
 @pytest.fixture(scope="module")
@@ -27,10 +19,27 @@ def missing_document():
 
 
 @pytest.fixture(scope="session")
-def session():
+def settings():
+    """Base settings class adjusted for testing purposes."""
+    # for local testing, change fields according to your needs
+    # since we're using github actions CI, we already have our env variables
+    # set to test database, so in this commit I'm keeping default settings values
+    settings = get_settings()
+    settings.SECRET_TOKEN = "foobar"
+    settings.EMAILS_FROM_NAME = "bot"
+
+    # # test database
+    # settings.POSTGRES_SERVER = ""
+    # settings.POSTGRES_USER = ""
+    # settings.POSTGRES_PASSWORD = ""
+    # settings.POSTGRES_DB = "postgres_test"
+    return settings
+
+
+@pytest.fixture(scope="session")
+def session(settings):
     """Reusable session."""
-    settings = get_settings_override()
-    engine = create_engine(str(settings.DATABASE_URI))
+    engine = get_engine(settings)
     SQLModel.metadata.drop_all(engine)
     SQLModel.metadata.create_all(engine)
     with Session(engine) as session:
@@ -38,15 +47,19 @@ def session():
 
 
 @pytest.fixture(scope="session")
-def client(session):
+def client(session, settings):
+    """Reusable client."""
+
+    def get_settings_override():
+        """Overrides default get_settings behavior."""
+        return settings
+
     def get_session_override():
-        """Overrides default get_session behavior
-        allowing testclient to use a session connected
-        to a test database."""
+        """Overrides default get_session behavior."""
         return session
 
-    app.dependency_overrides[get_session] = get_session_override
     app.dependency_overrides[get_settings] = get_settings_override
+    app.dependency_overrides[get_session] = get_session_override
     client = TestClient(app)
     yield client
     app.dependency_overrides.clear()
