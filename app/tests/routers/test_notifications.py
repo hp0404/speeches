@@ -1,7 +1,6 @@
 import emails
 import pytest
 
-from app.core.config import get_settings
 from app.routers.notifications import send_email
 
 EMAIL_TO = "test@gmail.com"
@@ -28,40 +27,50 @@ class MockMessage:
         return response
 
 
-def test_send_email_success(monkeypatch):
+def test_send_email_success(monkeypatch, settings):
     """Successful request: the message (email) has been sent."""
     monkeypatch.setattr("emails.Message", MockMessage)
-    settings = get_settings()
     response = send_email(email_to=EMAIL_TO, settings=settings)
     assert response.success
     assert response.to_addrs == [EMAIL_TO]
     assert response.from_addr == (settings.EMAILS_FROM_NAME, settings.EMAILS_FROM_EMAIL)
 
 
-def test_send_email_emails_disabled_failure():
+def test_send_email_emails_disabled_failure(monkeypatch, settings):
     """Failed request: raising AssertionError on EMAILS_ENABLED set to False."""
-    settings = get_settings()
-    settings.EMAILS_ENABLED = False
+    monkeypatch.setattr("emails.Message", MockMessage)
+
+    # modifying the copy as settings fixture's scope is set to session
+    # meaning 'new' values assigned to settings fixture might influence other tests
+    updated_settings = settings.copy()
+
+    # on it's own EMAILS_ENABLED = False doesn't work
+    # as settings class runs root_validation that checks if SMTP options are set
+    # and updates EMAILS_ENABLED field
+    updated_settings.EMAILS_ENABLED = False
+    updated_settings.EMAILS_FROM_EMAIL = None
     with pytest.raises(AssertionError):
-        send_email(email_to=EMAIL_TO, settings=settings)
+        send_email(email_to=EMAIL_TO, settings=updated_settings)
 
 
 @pytest.mark.parametrize(
     "tls,password,expected_response",
     [
-        (False, False, ["host", "port", "user"]),
-        (True, True, ["host", "port", "tls", "user", "password"]),
+        (False, None, ["host", "port", "user"]),
+        (True, "example", ["host", "port", "tls", "user", "password"]),
     ],
 )
-def test_send_email_smtp_options(monkeypatch, tls, password, expected_response):
+def test_send_email_smtp_options(
+    monkeypatch, settings, tls, password, expected_response
+):
     """Successful request: send_email function builds smtp_options correctly."""
     monkeypatch.setattr("emails.Message", MockMessage)
 
-    settings = get_settings()
-    settings.SMTP_TLS = tls
-    settings.SMTP_PASSWORD = password
+    updated_settings = settings.copy()
+    updated_settings.SMTP_TLS = tls
+    updated_settings.SMTP_PASSWORD = password
 
-    response = send_email(email_to=EMAIL_TO, settings=settings)
+    response = send_email(email_to=EMAIL_TO, settings=updated_settings)
     assert list(response.smtp_options.keys()) == expected_response
 
 

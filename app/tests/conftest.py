@@ -1,17 +1,24 @@
 import pytest
 from fastapi.testclient import TestClient
-from sqlmodel import Session, SQLModel, create_engine
 
 from app.core.config import get_settings
-from app.database import get_session
 from app.main import app
 
 
-def get_settings_override():
-    """Overrides default get_settings behavior allowing
-    testclient to use generic token to authenticate."""
+@pytest.fixture(scope="session")
+def settings():
+    """Base settings class adjusted for testing purposes."""
+    # for local testing, change fields according to your needs
+    # since we're using github actions CI, we already have our env variables
+    # set to test database, so in this commit I'm keeping default settings values
     settings = get_settings()
     settings.SECRET_TOKEN = "foobar"
+
+    # # test database
+    # settings.POSTGRES_SERVER = ""
+    # settings.POSTGRES_USER = ""
+    # settings.POSTGRES_PASSWORD = ""
+    # settings.POSTGRES_DB = "postgres_test"
     return settings
 
 
@@ -27,25 +34,13 @@ def missing_document():
 
 
 @pytest.fixture(scope="session")
-def session():
-    """Reusable session."""
-    settings = get_settings_override()
-    engine = create_engine(str(settings.DATABASE_URI))
-    SQLModel.metadata.drop_all(engine)
-    SQLModel.metadata.create_all(engine)
-    with Session(engine) as session:
-        yield session
+def client(settings):
+    """Reusable client."""
 
+    def get_settings_override():
+        """Overrides default get_settings behavior."""
+        return settings
 
-@pytest.fixture(scope="session")
-def client(session):
-    def get_session_override():
-        """Overrides default get_session behavior
-        allowing testclient to use a session connected
-        to a test database."""
-        return session
-
-    app.dependency_overrides[get_session] = get_session_override
     app.dependency_overrides[get_settings] = get_settings_override
     client = TestClient(app)
     yield client
