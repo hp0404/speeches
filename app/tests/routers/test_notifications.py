@@ -47,7 +47,6 @@ def test_send_email_emails_disabled_failure(monkeypatch, settings):
     # on it's own EMAILS_ENABLED = False doesn't work
     # as settings class runs root_validation that checks if SMTP options are set
     # and updates EMAILS_ENABLED field
-    updated_settings.EMAILS_ENABLED = False
     updated_settings.EMAILS_FROM_EMAIL = None
     with pytest.raises(AssertionError):
         send_email(email_to=EMAIL_TO, settings=updated_settings)
