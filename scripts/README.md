@@ -4,6 +4,7 @@ This folder contains utility scripts:
 
 | name | description |
 | --- | --- |
-| [`backup.sh`](backup.sh) | backs up database |
-| [`restore.sh`](restore.sh) | restores database |
-| [`clean.sh`](clean.sh) | removes cached & tmp files |
+| [`test.sh`](test.sh) | run tests |
+| [`backup.sh`](backup.sh) | back up database |
+| [`restore.sh`](restore.sh) | restore database |
+| [`clean.sh`](clean.sh) | remove cached & tmp files |
