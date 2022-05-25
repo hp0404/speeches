@@ -1,7 +1,7 @@
 import emails
 import pytest
 
-from app.routers.notifications import send_email
+from app.api.api_v1.endpoints.notifications import send_email
 
 EMAIL_TO = "test@gmail.com"
 NOTIFICATION = {"detail": "Notification sent in the background"}
@@ -77,7 +77,7 @@ def test_send_notification(client, monkeypatch):
     """Successful request: background tasks respond with expected message."""
     monkeypatch.setattr("emails.Message", MockMessage)
     response = client.post(
-        f"/send-notification/{EMAIL_TO}",
+        f"/api/v1/send-notification/{EMAIL_TO}",
         headers={"Authorization": "Bearer foobar"},
     )
     assert response.json() == NOTIFICATION

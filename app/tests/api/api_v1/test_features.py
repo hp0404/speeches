@@ -26,7 +26,7 @@ def test_read_features_by_document_invalid_uuid(
 ):
     """Failed request: input id is invalid (did not pass validation)."""
     response = client.get(
-        f"/features/{invalid_id}",
+        f"/api/v1/features/{invalid_id}",
         headers={"Authorization": "Bearer foobar"},
     )
     assert response.status_code == expected_status
@@ -36,7 +36,7 @@ def test_read_features_by_document_invalid_uuid(
 def test_read_features_by_document_document_not_found(client, missing_document):
     """Failed request: input id is valid but not found (passed validation)."""
     response = client.get(
-        f"/features/{missing_document}",
+        f"/api/v1/features/{missing_document}",
         headers={"Authorization": "Bearer foobar"},
     )
     assert response.status_code == 404
@@ -46,7 +46,7 @@ def test_read_features_by_document_document_not_found(client, missing_document):
 def test_read_features_by_document_document_found(client, uuids):
     """Successful request: input id is valid and found."""
     response = client.get(
-        f"/features/{uuids[1]}", headers={"Authorization": "Bearer foobar"}
+        f"/api/v1/features/{uuids[1]}", headers={"Authorization": "Bearer foobar"}
     )
     assert response.status_code == 200
     assert len(response.json()) == 3
@@ -59,7 +59,7 @@ def test_read_features_by_document_document_found_limit_success(client, uuids):
     """Successful request: input id is valid and found, results are limited to
     requested feature_type."""
     response = client.get(
-        f"/features/{uuids[1]}?feature_type=NE",
+        f"/api/v1/features/{uuids[1]}?feature_type=NE",
         headers={"Authorization": "Bearer foobar"},
     )
     assert response.status_code == 200
@@ -71,7 +71,7 @@ def test_read_features_by_document_document_found_limit_failure(client, uuids):
     """Failed request: input id is valid and found, results are limited to
     requested feature_type, but there are no matches."""
     response = client.get(
-        f"/features/{uuids[0]}?feature_type=NP",
+        f"/api/v1/features/{uuids[0]}?feature_type=NP",
         headers={"Authorization": "Bearer foobar"},
     )
     assert response.status_code == 404
@@ -139,7 +139,7 @@ def test_extract_features_from_text_success(client, payload, expected_response):
     """Successful feature extraction: features are extracted without being inserted
     into the database."""
     response = client.post(
-        "/features/", json=payload, headers={"Authorization": "Bearer foobar"}
+        "/api/v1/features/", json=payload, headers={"Authorization": "Bearer foobar"}
     )
     assert response.json() == expected_response
 
@@ -148,7 +148,7 @@ def test_extract_features_from_text_failure(client):
     """Failed feature extraction: features are not found within the text."""
     payload_without_features = {"text": "Отправить текст"}
     response = client.post(
-        "/features/",
+        "/api/v1/features/",
         json=payload_without_features,
         headers={"Authorization": "Bearer foobar"},
     )

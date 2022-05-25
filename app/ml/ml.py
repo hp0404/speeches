@@ -106,7 +106,7 @@ def create_pipeline(
     """Initializes ML pipeline."""
     nlp = spacy.load(model)
     if patterns is None:
-        patterns = Path(__file__).resolve().parent.parent / "assets" / "patterns"
+        patterns = Path(__file__).resolve().parent.parent.parent / "assets" / "patterns"
     return ML(nlp, patterns=patterns)
 
 

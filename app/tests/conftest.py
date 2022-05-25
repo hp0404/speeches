@@ -3,7 +3,7 @@ from fastapi.testclient import TestClient
 from sqlmodel import Session, SQLModel
 
 from app.core.config import get_settings
-from app.database import get_engine, get_session
+from app.db import get_engine, get_session
 from app.main import app
 
 
@@ -61,6 +61,7 @@ def client(session, settings):
     app.dependency_overrides[get_settings] = get_settings_override
     app.dependency_overrides[get_session] = get_session_override
     client = TestClient(app)
+    # client.base_url += "/api/v1"
     yield client
     app.dependency_overrides.clear()
 
@@ -91,7 +92,7 @@ def uuids(client, sample_data):
     added_uuids = []
     for item in sample_data:
         response = client.post(
-            "/speeches/", json=item, headers={"Authorization": "Bearer foobar"}
+            "/api/v1/speeches/", json=item, headers={"Authorization": "Bearer foobar"}
         )
         added_uuids.append(response.json()["id"])
 
@@ -101,5 +102,5 @@ def uuids(client, sample_data):
     # cleaning up
     for uuid in added_uuids:
         response = client.delete(
-            f"/speeches/{uuid}", headers={"Authorization": "Bearer foobar"}
+            f"/api/v1/speeches/{uuid}", headers={"Authorization": "Bearer foobar"}
         )

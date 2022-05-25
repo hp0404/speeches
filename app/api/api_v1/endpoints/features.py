@@ -6,7 +6,7 @@ import uuid
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
-from app.database import get_session
+from app.db import get_session
 from app.ml import feature_extractor
 from app.models import (
     Features,

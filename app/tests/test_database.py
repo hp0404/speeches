@@ -1,5 +1,5 @@
 import pytest
-from app.database import get_engine, get_session
+from app.db import get_engine, get_session
 
 
 def test_get_engine(settings):

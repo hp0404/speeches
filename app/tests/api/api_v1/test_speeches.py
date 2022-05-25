@@ -31,7 +31,9 @@ def test_create_speeches_failure(client, sample_data):
     """Failed request: the server responds with a validation error on
     invalid input payload."""
     response = client.post(
-        "/speeches/", json=sample_data, headers={"Authorization": "Bearer foobar"}
+        "/api/v1/speeches/",
+        json=sample_data,
+        headers={"Authorization": "Bearer foobar"},
     )
     assert response.status_code == 422
     assert response.json() == VALIDATION_ERROR
@@ -43,7 +45,7 @@ def test_create_delete_speeches_success(client, sample_data):
     added_uuids = []
     for item in sample_data:
         response = client.post(
-            "/speeches/", json=item, headers={"Authorization": "Bearer foobar"}
+            "/api/v1/speeches/", json=item, headers={"Authorization": "Bearer foobar"}
         )
         assert response.status_code == 200
         assert "id" in response.json()
@@ -52,7 +54,7 @@ def test_create_delete_speeches_success(client, sample_data):
     # delete
     for uuid in added_uuids:
         response = client.delete(
-            f"/speeches/{uuid}", headers={"Authorization": "Bearer foobar"}
+            f"/api/v1/speeches/{uuid}", headers={"Authorization": "Bearer foobar"}
         )
         assert response.status_code == 200
         assert response.json() == {"detail": f"deleted id={uuid}"}
@@ -61,7 +63,8 @@ def test_create_delete_speeches_success(client, sample_data):
 def test_read_speech_by_id_failure(client, missing_document):
     """Failed request: input id is valid but not found (passed validation)."""
     response = client.get(
-        f"/speeches/{missing_document}", headers={"Authorization": "Bearer foobar"}
+        f"/api/v1/speeches/{missing_document}",
+        headers={"Authorization": "Bearer foobar"},
     )
     assert response.status_code == 404
     assert response.json() == DOCUMENT_NOT_FOUND
@@ -71,7 +74,8 @@ def test_delete_speech_by_id_failure(client, missing_document):
     """Failed request: input id is valid but not found (passed validation),
     thus it cannot be deleted."""
     response = client.delete(
-        f"/speeches/{missing_document}", headers={"Authorization": "Bearer foobar"}
+        f"/api/v1/speeches/{missing_document}",
+        headers={"Authorization": "Bearer foobar"},
     )
     assert response.status_code == 404
     assert response.json() == DOCUMENT_NOT_FOUND
@@ -80,7 +84,7 @@ def test_delete_speech_by_id_failure(client, missing_document):
 def test_read_speech_by_id_success(client, uuids):
     """Successful request: input id is valid and found."""
     response = client.get(
-        f"/speeches/{uuids[0]}", headers={"Authorization": "Bearer foobar"}
+        f"/api/v1/speeches/{uuids[0]}", headers={"Authorization": "Bearer foobar"}
     )
     data = response.json()
     assert len(data) == 6
@@ -89,7 +93,7 @@ def test_read_speech_by_id_success(client, uuids):
 def test_read_speech_by_id_with_features(client, uuids):
     """Successful request: input id is valid and found, response includes features."""
     response = client.get(
-        f"/speeches/{uuids[1]}?include_features=true",
+        f"/api/v1/speeches/{uuids[1]}?include_features=true",
         headers={"Authorization": "Bearer foobar"},
     )
     data = response.json()
@@ -111,7 +115,9 @@ def test_read_speech_by_id_with_features(client, uuids):
 
 def test_read_speeches(client):
     """Successful request: hidden enpoint responds with metadata's entries"""
-    response = client.get("/speeches/", headers={"Authorization": "Bearer foobar"})
+    response = client.get(
+        "/api/v1/speeches/", headers={"Authorization": "Bearer foobar"}
+    )
     assert response.status_code == 200
     data = response.json()
     assert len(data) == 2
@@ -122,7 +128,7 @@ def test_read_speeches_offset_limit(client):
     """Successful request: hidden enpoint responds with metadata's entries,
     additional parameters -- offset and limit -- seem to work."""
     response = client.get(
-        "/speeches/?offset=1&limit=1", headers={"Authorization": "Bearer foobar"}
+        "/api/v1/speeches/?offset=1&limit=1", headers={"Authorization": "Bearer foobar"}
     )
     data = response.json()
     assert len(data) == 1
