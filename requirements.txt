@@ -1,4 +1,4 @@
-alembic==1.7.7
+alembic==1.8.0
 fastapi==0.75.2
 sqlmodel==0.0.6
 uvicorn==0.17.6
