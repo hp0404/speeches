@@ -9,6 +9,6 @@ ru-core-news-sm @ https://github.com/explosion/spacy-models/releases/download/ru
 tenacity==8.0.1
 emails==0.6
 email-validator==1.2.1
-SQLAlchemy==1.4.35
+SQLAlchemy==1.4.41
 pytest==7.1.2
 pytest-cov==3.0.0
