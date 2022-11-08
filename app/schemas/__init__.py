@@ -1,3 +1,3 @@
-from app.schemas.base import Document, Sentence, TextStatisticsJSON, Theme
+from app.schemas.base import Document, FakeJSON, Sentence, TextStatisticsJSON, Theme
 
-__all__ = ["Document", "Sentence", "TextStatisticsJSON", "Theme"]
+__all__ = ["Document", "FakeJSON", "Sentence", "TextStatisticsJSON", "Theme"]

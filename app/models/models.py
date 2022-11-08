@@ -8,7 +8,7 @@ from sqlalchemy import Column, Integer
 from sqlalchemy.dialects import postgresql
 from sqlmodel import JSON, Field, Relationship, SQLModel
 
-from app.schemas import TextStatisticsJSON
+from app.schemas import FakeJSON
 
 
 class Exports(SQLModel, table=True):
@@ -117,15 +117,44 @@ class TextStatistics(SQLModel, table=True):
     __tablename__: typing.ClassVar[str] = "text_statistics"
     id: typing.Optional[int] = Field(default=None, primary_key=True)
     sentence_id: typing.Optional[int] = Field(default=None, foreign_key="sentences.id")
-    statistics: TextStatisticsJSON = Field(
-        sa_column=Column(JSON), default={"all": "true"}
-    )
+
+    # basic
+    n_chars: int
+    n_letters: int
+    n_words: int
+    n_long_words: int
+    n_complex_words: int
+    n_simple_words: int
+    n_unique_words: int
+    n_syllables: int
+    n_monosyllable_words: int
+    n_polysyllable_words: int
+    # readability
+    automated_readability_index: float
+    coleman_liau_index: float
+    flesch_kincaid_grade: float
+    flesch_reading_easy: float
+    lix: float
+    smog_index: float
+    # diversity
+    ttr: float
+    rttr: float
+    cttr: float
+    sttr: float
+    mttr: float
+    dttr: float
+    mattr: float
+    msttr: float
+    mtld: float
+    mamtld: float
+    hdd: float
+    simpson_index: float
+    hapax_index: float
+    # morph
+    morphology: FakeJSON = Field(sa_column=Column(JSON), default={"all": "true"})
+
     # Relationship
     sentences: Sentences = Relationship(back_populates="textstats")
-
-    @validator("statistics")
-    def val_statistics(cls, val):
-        return val.dict()
 
     class Config:
         arbitrary_types_allowed = True

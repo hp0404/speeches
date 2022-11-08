@@ -55,9 +55,7 @@ class CRUDHTHML:
             )
             ts = calculate_stats(sentence.text)
             if ts is not None:
-                sentence.textstats = TextStatistics(
-                    sentence_id=sentence.id, statistics=ts
-                )
+                sentence.textstats = TextStatistics.parse_obj(ts)
             data_tuple = [(sentence.text, "discard")]
             for noun_phrase in KeyPhraseMatcher.yield_key_phrases(data_tuple):
                 phrase = ExtractedFeatures(
@@ -72,6 +70,7 @@ class CRUDHTHML:
             metadata.sentences.append(sentence)
         db.add(metadata)
         db.commit()
+
 
 def create_html_processor(html_contents: bytes) -> CRUDHTHML:
     try:

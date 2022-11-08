@@ -9,8 +9,3 @@ services:
       dockerfile: Dockerfile.prod
     ports:
       - 8000:80
-    networks:
-      - postgres_statements
-networks:
-  postgres_statements:
-    external: true

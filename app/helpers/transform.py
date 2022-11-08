@@ -86,28 +86,23 @@ class Transformer:
 
     def _extract_sentences(self) -> typing.List[typing.Dict[str, typing.Any]]:
         data = []
-        meta_speaker: typing.Optional[str] = None
+        previous_speaker: typing.Optional[str] = None
         paragraphs = self.soup.select(
             "div.entry-content.e-content.read__internal_content > p"
         )
         for paragraph_id, paragraph in enumerate(paragraphs, start=1):
-            has_bold = paragraph.find("b")
-            paragraph_speaker_matching = re.search(RE_SPEAKER, paragraph.text)
-            try:
-                paragraph_speaker = paragraph_speaker_matching.group()  # type: ignore
-            except AttributeError:
-                paragraph_speaker = None
-            # if highlighted
-            if paragraph_speaker: # and has_bold:
-                meta_speaker = paragraph_speaker
+            paragraph_speaker: typing.Optional[str] = None
+            m = re.search(RE_SPEAKER, paragraph.text)
+            if m is not None:
+                possible_speaker = m.group().strip()
+                dot = re.search(r"\.", possible_speaker)
+                if dot is not None:
+                    paragraph_speaker = possible_speaker
+                    previous_speaker = paragraph_speaker
+            if paragraph_speaker is None and previous_speaker is not None:
+                paragraph_speaker = previous_speaker
             doc = self.nlp(paragraph.text)
             for sentence_id, sentence in enumerate(doc.sents, start=1):
-                try:
-                    sentence_speaker = re.search(RE_SPEAKER, sentence.text.strip()).group()  # type: ignore
-                except AttributeError:
-                    sentence_speaker = paragraph_speaker
-                if sentence_speaker is None and meta_speaker is not None:
-                    sentence_speaker = meta_speaker
                 processed_text = self.clean_text(sentence.text)
                 if processed_text:
                     data.append(
@@ -121,8 +116,8 @@ class Transformer:
                                 for t in sentence
                                 if t.is_alpha and not t.is_stop
                             ),
-                            "speaker": sentence_speaker.strip(":")
-                            if sentence_speaker is not None
+                            "speaker": paragraph_speaker.strip(":")
+                            if paragraph_speaker is not None
                             else None,
                         }
                     )

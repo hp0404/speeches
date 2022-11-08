@@ -10,9 +10,38 @@ FakeJSON = typing.Dict[str, typing.Any]
 
 
 class TextStatisticsJSON(SQLModel):
-    basic: FakeJSON
-    readability: FakeJSON
-    diversity: FakeJSON
+    # basic
+    n_chars: int
+    n_letters: int
+    n_words: int
+    n_long_words: int
+    n_complex_words: int
+    n_simple_words: int
+    n_unique_words: int
+    n_syllables: int
+    n_monosyllable_words: int
+    n_polysyllable_words: int
+    # readability
+    automated_readability_index: float
+    coleman_liau_index: float
+    flesch_kincaid_grade: float
+    flesch_reading_easy: float
+    lix: float
+    smog_index: float
+    # diversity
+    ttr: float
+    rttr: float
+    cttr: float
+    sttr: float
+    mttr: float
+    dttr: float
+    mattr: float
+    msttr: float
+    mtld: float
+    mamtld: float
+    hdd: float
+    simpson_index: float
+    hapax_index: float
     morphology: FakeJSON
 
 
