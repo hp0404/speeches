@@ -4,11 +4,12 @@ sqlmodel==0.0.6
 uvicorn==0.18.2
 psycopg2-binary==2.9.3
 python-dotenv==0.20.0
-spacy==3.3.0
-ru-core-news-sm @ https://github.com/explosion/spacy-models/releases/download/ru_core_news_sm-3.3.0/ru_core_news_sm-3.3.0-py3-none-any.whl
+spacy==3.4.1
+ru-core-news-sm @ https://github.com/explosion/spacy-models/releases/download/ru_core_news_sm-3.4.0/ru_core_news_sm-3.4.0-py3-none-any.whl
+beautifulsoup4==4.11.1
+python-multipart==0.0.5
+ruts==0.8.1
 tenacity==8.0.1
-emails==0.6
-email-validator==1.2.1
 SQLAlchemy==1.4.35
 pytest==7.1.2
 pytest-cov==3.0.0
