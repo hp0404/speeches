@@ -1,8 +1,8 @@
 """init
 
-Revision ID: b93bcfbf273e
+Revision ID: e68c457d8e76
 Revises: 
-Create Date: 2022-10-06 20:00:33.054696
+Create Date: 2022-10-12 11:11:11.441106
 
 """
 from alembic import op
@@ -11,7 +11,7 @@ import sqlmodel
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = 'b93bcfbf273e'
+revision = 'e68c457d8e76'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -68,7 +68,36 @@ def upgrade():
     op.create_table('text_statistics',
     sa.Column('id', sa.Integer(), nullable=True),
     sa.Column('sentence_id', sa.Integer(), nullable=True),
-    sa.Column('statistics', sa.JSON(), nullable=True),
+    sa.Column('n_chars', sa.Integer(), nullable=False),
+    sa.Column('n_letters', sa.Integer(), nullable=False),
+    sa.Column('n_words', sa.Integer(), nullable=False),
+    sa.Column('n_long_words', sa.Integer(), nullable=False),
+    sa.Column('n_complex_words', sa.Integer(), nullable=False),
+    sa.Column('n_simple_words', sa.Integer(), nullable=False),
+    sa.Column('n_unique_words', sa.Integer(), nullable=False),
+    sa.Column('n_syllables', sa.Integer(), nullable=False),
+    sa.Column('n_monosyllable_words', sa.Integer(), nullable=False),
+    sa.Column('n_polysyllable_words', sa.Integer(), nullable=False),
+    sa.Column('automated_readability_index', sa.Float(), nullable=False),
+    sa.Column('coleman_liau_index', sa.Float(), nullable=False),
+    sa.Column('flesch_kincaid_grade', sa.Float(), nullable=False),
+    sa.Column('flesch_reading_easy', sa.Float(), nullable=False),
+    sa.Column('lix', sa.Float(), nullable=False),
+    sa.Column('smog_index', sa.Float(), nullable=False),
+    sa.Column('ttr', sa.Float(), nullable=False),
+    sa.Column('rttr', sa.Float(), nullable=False),
+    sa.Column('cttr', sa.Float(), nullable=False),
+    sa.Column('sttr', sa.Float(), nullable=False),
+    sa.Column('mttr', sa.Float(), nullable=False),
+    sa.Column('dttr', sa.Float(), nullable=False),
+    sa.Column('mattr', sa.Float(), nullable=False),
+    sa.Column('msttr', sa.Float(), nullable=False),
+    sa.Column('mtld', sa.Float(), nullable=False),
+    sa.Column('mamtld', sa.Float(), nullable=False),
+    sa.Column('hdd', sa.Float(), nullable=False),
+    sa.Column('simpson_index', sa.Float(), nullable=False),
+    sa.Column('hapax_index', sa.Float(), nullable=False),
+    sa.Column('morphology', sa.JSON(), nullable=True),
     sa.ForeignKeyConstraint(['sentence_id'], ['sentences.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
