@@ -14,7 +14,9 @@ config = context.config
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
-fileConfig(config.config_file_name)
+if config.config_file_name is not None:
+    fileConfig(config.config_file_name)
+
 settings = get_settings()
 db_uri_escaped = settings.DATABASE_URI.replace("%", "%%")
 config.set_main_option("sqlalchemy.url", db_uri_escaped)
@@ -23,7 +25,7 @@ config.set_main_option("sqlalchemy.url", db_uri_escaped)
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-from app.models import Metadata, Texts, Features
+from app.models import *
 target_metadata = SQLModel.metadata
 
 # other values from the config, defined by the needs of env.py,
