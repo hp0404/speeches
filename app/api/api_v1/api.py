@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends
-from starlette.responses import RedirectResponse
 
 from app.api.api_v1.endpoints import documents, load
 from app.core.auth import auth_request

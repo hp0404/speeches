@@ -3,7 +3,7 @@
 import datetime
 import typing
 
-from pydantic import HttpUrl, validator
+from pydantic import HttpUrl
 from sqlalchemy import Column, Integer
 from sqlalchemy.dialects import postgresql
 from sqlmodel import JSON, Field, Relationship, SQLModel

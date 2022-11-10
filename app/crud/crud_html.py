@@ -72,7 +72,7 @@ class CRUDHTHML:
 
 def create_html_processor(html_contents: bytes) -> CRUDHTHML:
     try:
-        backend = Transformer(html_contents=html_contents, nlp=nlp)
+        backend = Transformer(html_contents=html_contents, nlp_model=nlp)
     except InvalidHTML:
         raise HTTPException(status_code=422, detail="Unprocessable entity")
     return CRUDHTHML(backend=backend)
