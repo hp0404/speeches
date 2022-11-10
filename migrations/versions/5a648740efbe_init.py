@@ -1,6 +1,6 @@
 """init
 
-Revision ID: e68c457d8e76
+Revision ID: 5a648740efbe
 Revises: 
 Create Date: 2022-10-12 11:11:11.441106
 
@@ -11,7 +11,7 @@ import sqlmodel
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = 'e68c457d8e76'
+revision = '5a648740efbe'
 down_revision = None
 branch_labels = None
 depends_on = None

@@ -122,7 +122,7 @@ class ML:
         subtree or even token's direct children -- within which we're going to
         match phrases according to our pos combinations.
         """
-        for sentence, uuid in self.nlp.pipe(
+        for sentence, _ in self.nlp.pipe(
             sentences, as_tuples=True, batch_size=batch_size
         ):
             for possible_subject in sentence:
@@ -133,7 +133,11 @@ class ML:
                     subtree = sentence[
                         possible_subject.left_edge.i : possible_subject.right_edge.i + 1
                     ]
-                    yield from self.match(subtree, possible_subject=possible_subject)
+                    yield from self.match(
+                        subtree,
+                        possible_subject=possible_subject,
+                        exclusive_search=exclusive_search,
+                    )
                     yield from self.named_entities(subtree)
 
     def match(
@@ -177,12 +181,13 @@ class ML:
             }
 
 
-def create_pipeline(
-    model: str = "ru_core_news_sm", matcher: typing.Optional[Matcher] = None
-) -> ML:
+def create_nlp(model: str = "ru_core_news_sm") -> spacy.language.Language:
+    return spacy.load(model)
+
+
+nlp = create_nlp()
+
+
+def create_pipeline(matcher: typing.Optional[Matcher] = None) -> ML:
     """Initializes ML pipeline."""
-    nlp = spacy.load(model)
     return ML(nlp, matcher=matcher)
-
-
-feature_extractor = create_pipeline()

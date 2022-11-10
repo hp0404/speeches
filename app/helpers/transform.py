@@ -6,6 +6,7 @@ import spacy
 from bs4 import BeautifulSoup
 
 from app.schemas import Document, Sentence, Theme
+from app.helpers.ml import nlp
 
 RE_SPEAKER = re.compile(
     r"(^\w+[\s\.\-][А-ЯA-Z]\w+\:|^\w+[\s\.\-][А-ЯA-Z]\w*[\s\.\-][А-ЯA-Z]\w+\:|^\w+[\s\.\-][А-ЯA-Z]\w*[\s\.\-][А-ЯA-Z]\w*[\s\.\-][А-ЯA-Z]\w+\:|^\w+[\s\.\-][А-ЯA-Z]\w*[\s\.\-][А-ЯA-Z]\w*[\s\.\-][А-ЯA-Z]\w*[\s\.\-][А-ЯA-Z]\w+\:|^\«.{2,50}\»\:|^.{2,40}\«.{2,40}\»\:|^.{4,40}\(.+?\)\:)",
@@ -19,9 +20,11 @@ class InvalidHTML(ValueError):
 
 class Transformer:
     def __init__(
-        self, html_contents: bytes, nlp: typing.Optional[spacy.language.Language] = None
+        self,
+        html_contents: bytes,
+        nlp_model: typing.Optional[spacy.language.Language] = None,
     ):
-        self.nlp = nlp if nlp is not None else create_nlp()
+        self.nlp = nlp_model if nlp_model is not None else nlp
         self.html_contents = html_contents
         self.soup = BeautifulSoup(html_contents, "html.parser")
         self.document_id = None
@@ -129,7 +132,3 @@ class Transformer:
         for pattern in (r"\*", r"\xa0", r"\n", r"^\w+\.\w+\:\s+", r"<…>"):
             cleaned_text = re.sub(pattern, " ", cleaned_text)
         return cleaned_text.strip()
-
-
-def create_nlp(model: str = "ru_core_news_sm") -> spacy.language.Language:
-    return spacy.load(model)

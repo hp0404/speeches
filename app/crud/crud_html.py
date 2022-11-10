@@ -1,10 +1,9 @@
-import typing
-
 from fastapi import HTTPException
-from sqlmodel import Session, SQLModel
+from sqlmodel import Session
 
-from app.helpers import calculate_stats, create_pipeline
-from app.helpers.transform import InvalidHTML, Transformer, create_nlp
+from app.helpers.ml import create_pipeline, nlp
+from app.helpers.textstats import calculate_stats
+from app.helpers.transform import InvalidHTML, Transformer
 from app.models import (
     Exports,
     ExtractedFeatures,
@@ -14,7 +13,6 @@ from app.models import (
     Themes,
 )
 
-nlp = create_nlp()
 KeyPhraseMatcher = create_pipeline()
 
 
