@@ -7,5 +7,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.prod
+    environment:
+      - WORKERS_PER_CORE=1
+      - MAX_WORKERS=1
+      - WEB_CONCURRENCY=1
     ports:
       - 8000:80
