@@ -1,0 +1,238 @@
+[
+    {
+        "label": "ADJ-NOUN",
+        "pattern": [
+            [{"POS": "ADJ"}, {"POS": {"IN": ["NOUN", "PROPN"]}}]
+        ]
+    },
+    {
+        "label": "ADJ-ADJ-NOUN",
+        "pattern": [
+            [{"POS": "ADJ"}, {"POS": "ADJ"}, {"POS": {"IN": ["NOUN", "PROPN"]}}]
+        ]
+    },
+    {
+        "label": "NOUN-NOUN",
+        "pattern": [
+            [{"POS": {"IN": ["NOUN", "PROPN"]}}, {"POS": {"IN": ["NOUN", "PROPN"]}}]
+        ]
+    },
+    {
+        "label": "NOUN-NOUN-NOUN",
+        "pattern": [
+            [
+                {"POS": {"IN": ["NOUN", "PROPN"]}}, 
+                {"POS": {"IN": ["NOUN", "PROPN"]}}, 
+                {"POS": {"IN": ["NOUN", "PROPN"]}}
+            ]
+        ]
+    },
+    {
+        "label": "ADJ-NOUN-NOUN",
+        "pattern": [
+            [
+                {"POS": "ADJ"}, 
+                {"POS": {"IN": ["NOUN", "PROPN"]}},
+                {"POS": {"IN": ["NOUN", "PROPN"]}}
+            ]
+        ]
+    },
+    {
+        "label": "VERB-ADJ-NOUN",
+        "pattern": [
+            [{"POS": "VERB"}, {"POS": "ADJ"}, {"POS": {"IN": ["NOUN", "PROPN"]}}]
+        ]
+    },
+    {
+        "label": "ADJ-VERB",
+        "pattern": [
+            [{"POS": "ADJ"}, {"POS": "VERB"}]
+        ]
+    },
+    {
+        "label": "ADJ-NUM",
+        "pattern": [
+            [{"POS": "ADJ"}, {"POS": "NUM"}]
+        ]
+    },
+    {
+        "label": "ADJ-VERB-NOUN",
+        "pattern": [
+            [{"POS": "ADJ"}, {"POS": "VERB"}, {"POS": {"IN": ["NOUN", "PROPN"]}}]
+        ]
+    },
+    {
+        "label": "ADJ-ADJ-ADJ-NOUN",
+        "pattern": [
+            [{"POS": "ADJ"}, {"POS": "ADJ"}, {"POS": "ADJ"}, {"POS": {"IN": ["NOUN", "PROPN"]}}]
+        ]
+    },
+    {
+        "label": "ADJ-ADJ-NOUN-NOUN",
+        "pattern": [
+            [{"POS": "ADJ"}, {"POS": "ADJ"}, {"POS": {"IN": ["NOUN", "PROPN"]}}, {"POS": {"IN": ["NOUN", "PROPN"]}}]
+        ]
+    },
+    {
+        "label": "ADJ-NOUN-ADJ-NOUN",
+        "pattern": [
+            [{"POS": "ADJ"}, {"POS": {"IN": ["NOUN", "PROPN"]}}, {"POS": "ADJ"}, {"POS": {"IN": ["NOUN", "PROPN"]}}]
+        ]
+    },
+    {
+        "label": "ADJ-NOUN-NOUN-NOUN",
+        "pattern": [
+            [{"POS": "ADJ"}, {"POS": {"IN": ["NOUN", "PROPN"]}}, {"POS": {"IN": ["NOUN", "PROPN"]}}, {"POS": {"IN": ["NOUN", "PROPN"]}}]
+        ]
+    },
+    {
+        "label": "ADJ-NOUN-NOUN-NOUN-NOUN",
+        "pattern": [
+            [{"POS": "ADJ"}, {"POS": {"IN": ["NOUN", "PROPN"]}}, {"POS": {"IN": ["NOUN", "PROPN"]}}, {"POS": {"IN": ["NOUN", "PROPN"]}}, {"POS": {"IN": ["NOUN", "PROPN"]}}]
+        ]
+    },
+    {
+        "label": "ADJ-NOUN-PUNCT-ADJ-NOUN",
+        "pattern": [
+            [{"POS": "ADJ"}, {"POS": {"IN": ["NOUN", "PROPN"]}}, {"ORTH": "-"}, {"POS": "ADJ"}, {"POS": {"IN": ["NOUN", "PROPN"]}}]
+        ]
+    },
+    {
+        "label": "ADJ-PUNCT-NOUN-NOUN",
+        "pattern": [
+            [{"POS": "ADJ"}, {"ORTH": "-"}, {"POS": {"IN": ["NOUN", "PROPN"]}}, {"POS": {"IN": ["NOUN", "PROPN"]}}]
+        ]
+    },
+    {
+        "label": "ADJ-PUNCT-NOUN-ADJ-NOUN",
+        "pattern": [
+            [{"POS": "ADJ"}, {"ORTH": "-"}, {"POS": {"IN": ["NOUN", "PROPN"]}}, {"POS": "ADJ"}, {"POS": {"IN": ["NOUN", "PROPN"]}}]
+        ]
+    },
+    {
+        "label": "ADJ-PUNCT-NOUN-NOUN-NOUN",
+        "pattern": [
+            [{"POS": "ADJ"}, {"ORTH": "-"}, {"POS": {"IN": ["NOUN", "PROPN"]}}, {"POS": {"IN": ["NOUN", "PROPN"]}}, {"POS": {"IN": ["NOUN", "PROPN"]}}]
+        ]
+    },
+    {
+        "label": "ADJ-PUNCT-ADJ-NOUN",
+        "pattern": [
+            [{"POS": "ADJ"}, {"ORTH": "-"}, {"POS": "ADJ"}, {"POS": {"IN": ["NOUN", "PROPN"]}}]
+        ]
+    },
+    {
+        "label": "ADJ-PUNCT-ADJ-ADJ-NOUN",
+        "pattern": [
+            [{"POS": "ADJ"}, {"ORTH": "-"}, {"POS": "ADJ"}, {"POS": "ADJ"}, {"POS": {"IN": ["NOUN", "PROPN"]}}]
+        ]
+    },
+    {
+        "label": "ADJ-ADJ-PUNCT-NOUN-NOUN",
+        "pattern": [
+            [{"POS": "ADJ"}, {"POS": "ADJ"}, {"ORTH": "-"}, {"POS": {"IN": ["NOUN", "PROPN"]}}, {"POS": {"IN": ["NOUN", "PROPN"]}}]
+        ]
+    },
+    {
+        "label": "ADP-PUNCT-NOUN-NOUN",
+        "pattern": [
+            [{"POS": "ADP"}, {"ORTH": "-"}, {"POS": {"IN": ["NOUN", "PROPN"]}}, {"POS": {"IN": ["NOUN", "PROPN"]}}]
+        ]
+    },
+    {
+        "label": "DET-PUNCT-NOUN-NOUN",
+        "pattern": [
+            [{"POS": "DET"}, {"ORTH": "-"}, {"POS": {"IN": ["NOUN", "PROPN"]}}, {"POS": {"IN": ["NOUN", "PROPN"]}}]
+        ]
+    },
+    {
+        "label": "NOUN-VERB",
+        "pattern": [
+            [{"POS": {"IN": ["NOUN", "PROPN"]}}, {"POS": "VERB"}]
+        ]
+    },
+    {
+        "label": "NOUN-NOUN-NOUN-NOUN",
+        "pattern": [
+            [{"POS": {"IN": ["NOUN", "PROPN"]}}, {"POS": {"IN": ["NOUN", "PROPN"]}}, {"POS": {"IN": ["NOUN", "PROPN"]}}, {"POS": {"IN": ["NOUN", "PROPN"]}}]
+        ]
+    },
+    {
+        "label": "NOUN-PUNCT-ADJ-NOUN",
+        "pattern": [
+            [{"POS": {"IN": ["NOUN", "PROPN"]}}, {"ORTH": "-"}, {"POS": "ADJ"}, {"POS": {"IN": ["NOUN", "PROPN"]}}]
+        ]
+    },
+    {
+        "label": "NOUN-PUNCT-ADJ-NOUN-NOUN",
+        "pattern": [
+            [{"POS": {"IN": ["NOUN", "PROPN"]}}, {"ORTH": "-"}, {"POS": "ADJ"}, {"POS": {"IN": ["NOUN", "PROPN"]}}, {"POS": {"IN": ["NOUN", "PROPN"]}}]
+        ]
+    },
+    {
+        "label": "NOUN-PUNCT-NOUN-NOUN",
+        "pattern": [
+            [{"POS": {"IN": ["NOUN", "PROPN"]}}, {"ORTH": "-"}, {"POS": {"IN": ["NOUN", "PROPN"]}}, {"POS": {"IN": ["NOUN", "PROPN"]}}]
+        ]
+    },
+    {
+        "label": "NOUN-PUNCT-NOUN-ADJ-NOUN",
+        "pattern": [
+            [{"POS": {"IN": ["NOUN", "PROPN"]}}, {"ORTH": "-"}, {"POS": {"IN": ["NOUN", "PROPN"]}}, {"POS": "ADJ"}, {"POS": {"IN": ["NOUN", "PROPN"]}}]
+        ]
+    },
+    {
+        "label": "NOUN-NOUN-PUNCT-ADJ-NOUN",
+        "pattern": [
+            [{"POS": {"IN": ["NOUN", "PROPN"]}}, {"POS": {"IN": ["NOUN", "PROPN"]}}, {"ORTH": "-"}, {"POS": "ADJ"}, {"POS": {"IN": ["NOUN", "PROPN"]}}]
+        ]
+    },
+    {
+        "label": "NUM-PUNCT-ADJ-NOUN",
+        "pattern": [
+            [{"POS": "NUM"}, {"ORTH": "-"}, {"POS": "ADJ"}, {"POS": {"IN": ["NOUN", "PROPN"]}}]
+        ]
+    },
+    {
+        "label": "NUM-PUNCT-NOUN-NOUN",
+        "pattern": [
+            [{"POS": "NUM"}, {"ORTH": "-"}, {"POS": {"IN": ["NOUN", "PROPN"]}}, {"POS": {"IN": ["NOUN", "PROPN"]}}]
+        ]
+    },
+    {
+        "label": "PART-PUNCT-NOUN-NOUN",
+        "pattern": [
+            [{"POS": "PART"}, {"ORTH": "-"}, {"POS": {"IN": ["NOUN", "PROPN"]}}, {"POS": {"IN": ["NOUN", "PROPN"]}}]
+        ]
+    },
+    {
+        "label": "NOUN-VERB-NOUN",
+        "pattern": [
+            [{"POS": {"IN": ["NOUN", "PROPN"]}}, {"POS": "VERB"}, {"POS": {"IN": ["NOUN", "PROPN"]}}]
+        ]
+    },
+    {
+        "label": "VERB-NOUN",
+        "pattern": [
+            [{"POS": "VERB"}, {"POS": {"IN": ["NOUN", "PROPN"]}}]
+        ]
+    },
+    {
+        "label": "VERB-NOUN-NOUN",
+        "pattern": [
+            [{"POS": "VERB"}, {"POS": {"IN": ["NOUN", "PROPN"]}}, {"POS": {"IN": ["NOUN", "PROPN"]}}]
+        ]
+    },
+    {
+        "label": "VERB-VERB-NOUN",
+        "pattern": [
+            [{"POS": "VERB"}, {"POS": "VERB"}, {"POS": {"IN": ["NOUN", "PROPN"]}}]
+        ]
+    },
+    {
+        "label": "VERB-ADJ-ADJ-NOUN",
+        "pattern": [
+            [{"POS": "VERB"}, {"POS": "ADJ"}, {"POS": "ADJ"}, {"POS": {"IN": ["NOUN", "PROPN"]}}]
+        ]
+    }
+]
