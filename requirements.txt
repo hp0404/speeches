@@ -9,6 +9,6 @@ ru-core-news-sm @ https://github.com/explosion/spacy-models/releases/download/ru
 beautifulsoup4==4.11.1
 python-multipart==0.0.5
 tenacity==8.0.1
-SQLAlchemy==1.4.35
+SQLAlchemy==1.4.44
 ruts==0.8.1
 
