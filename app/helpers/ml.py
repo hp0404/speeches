@@ -6,10 +6,12 @@ from pathlib import Path
 
 import spacy
 from spacy.matcher import Matcher
-from spacy.symbols import VERB, nsubj, nsubjpass
+from spacy.symbols import VERB, nsubj, nsubjpass # type: ignore
 from spacy.tokens import Span
 
 from app.helpers.treebank import is_vbg, is_vbn
+
+DEFAULT_PATTERNS = Path(__file__).resolve().parent / "assets" / "default_patterns.json"
 
 
 class Rule(typing.NamedTuple):
@@ -74,9 +76,7 @@ class ML:
             defaults to our own implementation but could be replaced with a custom one
         """
         self.nlp = nlp
-        self._default_patterns = (
-            Path(__file__).resolve().parent / "assets" / "default_patterns.json"
-        )
+        self._default_patterns = DEFAULT_PATTERNS
         self.matcher = (
             matcher
             if matcher is not None

@@ -2,18 +2,21 @@ from fastapi import HTTPException
 from sqlmodel import Session
 
 from app.helpers.ml import create_pipeline, nlp
+from app.helpers.red_lines import RedLinesClassifier
 from app.helpers.textstats import calculate_stats
 from app.helpers.transform import InvalidHTML, Transformer
 from app.models import (
     Exports,
     ExtractedFeatures,
     Metadata,
+    RedLines,
     Sentences,
     TextStatistics,
     Themes,
 )
 
 KeyPhraseMatcher = create_pipeline()
+classifier = RedLinesClassifier()
 
 
 class CRUDHTHML:
@@ -42,18 +45,29 @@ class CRUDHTHML:
                     document_id=model.id, category=value.category, theme=value.theme
                 )
                 metadata.themes.append(theme)
-        for value in model.sentences:
+        for sent in model.sentences:
             sentence = Sentences(
-                document_id=value.document_id,
-                paragraph_id=value.paragraph_id,
-                sentence_id=value.sentence_id,
-                speaker=value.speaker,
-                text=value.text,
-                text_lemmatized=value.text_lemmatized,
+                document_id=sent.document_id,
+                paragraph_id=sent.paragraph_id,
+                sentence_id=sent.sentence_id,
+                speaker=sent.speaker,
+                text=sent.text,
+                text_lemmatized=sent.text_lemmatized,
             )
             ts = calculate_stats(sentence.text)
             if ts is not None:
-                sentence.textstats = TextStatistics.parse_obj(ts)
+                sentence.textstats = TextStatistics.from_orm(ts)
+
+            prediction = classifier.store(sent.text)
+            sentence.redlines = RedLines(
+                sentence_id=sent.sentence_id,
+                model_language=prediction.model_language,
+                model_name=prediction.model_name,
+                model_type=prediction.model_type,
+                model_performance=prediction.model_performance,
+                model_version=prediction.model_version,
+                prediction=prediction.prediction,
+            )
             data_tuple = [(sentence.text, "discard")]
             for noun_phrase in KeyPhraseMatcher.yield_key_phrases(data_tuple):
                 phrase = ExtractedFeatures(

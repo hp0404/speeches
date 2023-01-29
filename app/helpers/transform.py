@@ -5,8 +5,8 @@ import typing
 import spacy
 from bs4 import BeautifulSoup
 
-from app.schemas import Document, Sentence, Theme
 from app.helpers.ml import nlp
+from app.schemas import Document, Sentence, Theme
 
 RE_SPEAKER = re.compile(
     r"(^\w+[\s\.\-][А-ЯA-Z]\w+\:|^\w+[\s\.\-][А-ЯA-Z]\w*[\s\.\-][А-ЯA-Z]\w+\:|^\w+[\s\.\-][А-ЯA-Z]\w*[\s\.\-][А-ЯA-Z]\w*[\s\.\-][А-ЯA-Z]\w+\:|^\w+[\s\.\-][А-ЯA-Z]\w*[\s\.\-][А-ЯA-Z]\w*[\s\.\-][А-ЯA-Z]\w*[\s\.\-][А-ЯA-Z]\w+\:|^\«.{2,50}\»\:|^.{2,40}\«.{2,40}\»\:|^.{4,40}\(.+?\)\:)",
@@ -27,12 +27,12 @@ class Transformer:
         self.nlp = nlp_model if nlp_model is not None else nlp
         self.html_contents = html_contents
         self.soup = BeautifulSoup(html_contents, "html.parser")
-        self.document_id = None
+        self.document_id: typing.Optional[int] = None
         self.title = None
         self.date = None
-        self.url = None
-        self.themes = None
-        self.sentences = None
+        self.url: typing.Optional[str] = None
+        self.themes: typing.Optional[typing.List[typing.Dict[str, str]]] = None
+        self.sentences: typing.Optional[typing.List[typing.Dict[str, typing.Any]]] = None
         # always running metadata first
         self._extract_metadata()
 
@@ -42,11 +42,6 @@ class Transformer:
                 self.themes = self._extract_themes()
             except InvalidHTML:
                 self.themes = None
-        themes = (
-            [Theme(**theme) for theme in self.themes]
-            if self.themes is not None
-            else None
-        )
         if self.sentences is None:
             self.sentences = self._extract_sentences()
         return Document(
@@ -54,7 +49,11 @@ class Transformer:
             title=self.title,
             date=self.date,
             url=self.url,
-            themes=themes,
+            themes=(
+                [Theme(**theme) for theme in self.themes]
+                if self.themes is not None
+                else None
+            ),
             sentences=[Sentence(**sent) for sent in self.sentences],
         )
 

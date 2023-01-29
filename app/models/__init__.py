@@ -2,6 +2,7 @@ from app.models.models import (
     Exports,
     ExtractedFeatures,
     Metadata,
+    RedLines,
     Sentences,
     TextStatistics,
     Themes,
@@ -14,4 +15,5 @@ __all__ = [
     "Sentences",
     "TextStatistics",
     "Themes",
+    "RedLines",
 ]

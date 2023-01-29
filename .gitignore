@@ -6,3 +6,9 @@ __pycache__/
 # Environments
 .env
 env/
+
+# Models
+app/helpers/assets/red-lines/
+
+# Mac
+.DS_Store
