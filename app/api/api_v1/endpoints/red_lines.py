@@ -3,13 +3,12 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session
 
+from app.crud.crud_html import classifier
 from app.db import get_session
-from app.helpers.red_lines import RedLinesClassifier
 from app.models import RedLines as database_model
 from app.schemas import RedLines as response_model
 
 router = APIRouter(prefix="/classifier", tags=["NLP pipeline"])
-classifier = RedLinesClassifier()
 
 
 @router.post("/predict", response_model=response_model)
