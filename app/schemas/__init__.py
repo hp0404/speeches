@@ -10,8 +10,8 @@ from app.schemas.base import (
 __all__ = [
     "Document",
     "FakeJSON",
+    "RedLines",
     "Sentence",
     "TextStatisticsJSON",
     "Theme",
-    "RedLines",
 ]

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import typing
 
-import ruts # type: ignore
+import ruts  # type: ignore
 
 from app.schemas import TextStatisticsJSON
 

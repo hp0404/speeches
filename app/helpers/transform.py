@@ -3,7 +3,7 @@ import re
 import typing
 
 import spacy
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup  # type: ignore
 
 from app.helpers.ml import nlp
 from app.schemas import Document, Sentence, Theme
@@ -32,7 +32,9 @@ class Transformer:
         self.date = None
         self.url: typing.Optional[str] = None
         self.themes: typing.Optional[typing.List[typing.Dict[str, str]]] = None
-        self.sentences: typing.Optional[typing.List[typing.Dict[str, typing.Any]]] = None
+        self.sentences: typing.Optional[
+            typing.List[typing.Dict[str, typing.Any]]
+        ] = None
         # always running metadata first
         self._extract_metadata()
 

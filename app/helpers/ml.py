@@ -6,7 +6,7 @@ from pathlib import Path
 
 import spacy
 from spacy.matcher import Matcher
-from spacy.symbols import VERB, nsubj, nsubjpass # type: ignore
+from spacy.symbols import VERB, nsubj, nsubjpass  # type: ignore
 from spacy.tokens import Span
 
 from app.helpers.treebank import is_vbg, is_vbn

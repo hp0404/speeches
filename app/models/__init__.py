@@ -12,8 +12,8 @@ __all__ = [
     "Exports",
     "ExtractedFeatures",
     "Metadata",
+    "RedLines",
     "Sentences",
     "TextStatistics",
     "Themes",
-    "RedLines",
 ]
