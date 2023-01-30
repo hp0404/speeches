@@ -66,3 +66,13 @@ class Document(SQLModel):
     url: HttpUrl
     sentences: typing.List[Sentence]
     themes: typing.Optional[typing.List[Theme]] = None
+
+
+class RedLines(SQLModel):
+    model_language: str
+    model_name: str
+    model_type: typing.Optional[str] = None
+    model_version: str
+    model_performance: typing.Optional[str] = None
+
+    prediction: float

@@ -11,11 +11,11 @@ settings = get_settings()
 tags_metadata = [
     {
         "name": "ETL pipeline",
-        "description": "Operations with texts: CRUD",
+        "description": "Create, Read, Update, Delete: speeches",
     },
     {
         "name": "NLP pipeline",
-        "description": "Operations with NLP model: extracts text statistics, noun phrases, entities",
+        "description": "Classify texts",
     },
 ]
 app = FastAPI(

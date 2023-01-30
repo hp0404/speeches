@@ -96,6 +96,13 @@ class Sentences(SQLModel, table=True):
             "cascade": "all,delete,delete-orphan",
         },
     )
+    redlines: "RedLines" = Relationship(
+        back_populates="sentences",
+        sa_relationship_kwargs={
+            "uselist": False,
+            "cascade": "all,delete,delete-orphan",
+        },
+    )
 
 
 class ExtractedFeatures(SQLModel, table=True):
@@ -158,3 +165,21 @@ class TextStatistics(SQLModel, table=True):
 
     class Config:
         arbitrary_types_allowed = True
+
+
+class RedLines(SQLModel, table=True):
+    __tablename__: typing.ClassVar[str] = "red_lines"
+    id: typing.Optional[int] = Field(default=None, primary_key=True)
+    sentence_id: typing.Optional[int] = Field(default=None, foreign_key="sentences.id")
+
+    model_language: str
+    model_name: str
+    model_type: typing.Optional[str] = Field(default=None)
+    model_version: str
+    model_performance: typing.Optional[float] = Field(default=None)
+
+    prediction: float
+    predicted_at: datetime.datetime = Field(default_factory=datetime.datetime.utcnow)
+
+    # Relationship
+    sentences: Sentences = Relationship(back_populates="redlines")
