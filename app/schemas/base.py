@@ -76,3 +76,11 @@ class RedLines(SQLModel):
     model_performance: typing.Optional[str] = None
 
     prediction: float
+
+
+class Embeddings(SQLModel):
+    id: int
+    sentence_id: int
+    model_language: str
+    model_name: str
+    vector: typing.List[float]

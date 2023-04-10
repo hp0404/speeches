@@ -12,7 +12,8 @@ DEFAULT_MODEL = Path(__file__).resolve().parent / "assets" / "red-lines"
 
 
 class RedLinesClassifier:
-    """This class is used for classifying red-lines statements using pre-trained textcat model."""
+    """This class is used for classifying red-lines statements
+    using pre-trained textcat model."""
 
     def __init__(self, model: typing.Union[spacy.language.Language, None] = None):
         self.nlp = model if model is not None else spacy.load(DEFAULT_MODEL)
@@ -32,11 +33,12 @@ class RedLinesClassifier:
     def load(
         cls, model: typing.Union[spacy.language.Language, None] = None
     ) -> "RedLinesClassifier":
-        """A class method that returns an instance of the RedLinesClassifier with a pre-trained spaCy model."""
+        """A class method that returns an instance of the RedLinesClassifier
+        with a pre-trained spaCy model."""
         return RedLinesClassifier(model=model)
 
     def predict(self, text: str) -> Prediction:
-        """Given a text, return the predicted categories using the loaded spaCy model."""
+        """Given a text, return the predicted categories using the spaCy model."""
         return self.nlp(text).cats
 
     def store(self, text: str) -> RedLines:

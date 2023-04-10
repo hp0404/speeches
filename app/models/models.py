@@ -183,3 +183,16 @@ class RedLines(SQLModel, table=True):
 
     # Relationship
     sentences: Sentences = Relationship(back_populates="redlines")
+
+
+class Embeddings(SQLModel, table=True):
+    __tablename__: typing.ClassVar[str] = "embeddings"
+    id: typing.Optional[int] = Field(default=None, primary_key=True)
+    sentence_id: typing.Optional[int] = Field(default=None, foreign_key="sentences.id")
+
+    model_language: str
+    model_name: str
+    vector: typing.List[float]
+
+    # Relationship
+    sentences: Sentences = Relationship(back_populates="redlines")

@@ -3,7 +3,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, desc, select
 
-from app.db import get_session
+from app.db.database import get_session
 from app.models import Metadata
 
 router = APIRouter(prefix="/documents", tags=["ETL pipeline"])

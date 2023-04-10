@@ -2,7 +2,7 @@ alembic==1.9.1
 fastapi==0.88.0
 sqlmodel==0.0.8
 uvicorn==0.18.2
-psycopg2-binary==2.9.3
+psycopg2-binary==2.9.5
 python-dotenv==0.20.0
 spacy==3.4.4
 ru-core-news-sm @ https://github.com/explosion/spacy-models/releases/download/ru_core_news_sm-3.4.0/ru_core_news_sm-3.4.0-py3-none-any.whl

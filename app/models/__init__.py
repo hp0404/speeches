@@ -1,4 +1,6 @@
+# -*- coding: utf-8 -*-
 from app.models.models import (
+    Embeddings,
     Exports,
     ExtractedFeatures,
     Metadata,
@@ -9,6 +11,7 @@ from app.models.models import (
 )
 
 __all__ = [
+    "Embeddings",
     "Exports",
     "ExtractedFeatures",
     "Metadata",

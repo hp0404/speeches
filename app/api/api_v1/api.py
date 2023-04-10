@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from fastapi import APIRouter, Depends
 
 from app.api.api_v1.endpoints import documents, load, red_lines
