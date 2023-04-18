@@ -79,8 +79,6 @@ class RedLines(SQLModel):
 
 
 class Embeddings(SQLModel):
-    id: int
-    sentence_id: int
     model_language: str
     model_name: str
     vector: typing.List[float]
