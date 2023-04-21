@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, UploadFile
 from sqlmodel import Session
 
 from app.crud.crud_html import create_html_processor
-from app.db import get_session
+from app.db.database import get_session
 
 router = APIRouter(prefix="/upload", tags=["ETL pipeline"])
 

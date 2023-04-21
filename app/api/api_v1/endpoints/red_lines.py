@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session
 
 from app.crud.crud_html import classifier
-from app.db import get_session
+from app.db.database import get_session
 from app.models import RedLines as database_model
 from app.schemas import RedLines as response_model
 

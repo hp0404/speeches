@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from fastapi import HTTPException
 from sqlmodel import Session
 
@@ -6,6 +7,7 @@ from app.helpers.red_lines import RedLinesClassifier
 from app.helpers.textstats import calculate_stats
 from app.helpers.transform import InvalidHTML, Transformer
 from app.models import (
+    Embeddings,
     Exports,
     ExtractedFeatures,
     Metadata,
@@ -68,6 +70,15 @@ class CRUDHTHML:
                 model_version=prediction.model_version,
                 prediction=prediction.prediction,
             )
+
+            vector = nlp(sent.text).vector.tolist()
+            sentence.embeddings = Embeddings(
+                sentence_id=sent.sentence_id,
+                model_language=nlp.meta["lang"],
+                model_name=nlp.meta["name"],
+                vector=vector,
+            )
+
             data_tuple = [(sentence.text, "discard")]
             for noun_phrase in KeyPhraseMatcher.yield_key_phrases(data_tuple):
                 phrase = ExtractedFeatures(

@@ -4,7 +4,7 @@ import datetime
 import typing
 
 from pydantic import HttpUrl
-from sqlalchemy import Column, Integer
+from sqlalchemy import Column, Integer, Float
 from sqlalchemy.dialects import postgresql
 from sqlmodel import JSON, Field, Relationship, SQLModel
 
@@ -103,6 +103,13 @@ class Sentences(SQLModel, table=True):
             "cascade": "all,delete,delete-orphan",
         },
     )
+    embeddings: "Embeddings" = Relationship(
+        back_populates="sentences",
+        sa_relationship_kwargs={
+            "uselist": False,
+            "cascade": "all,delete,delete-orphan",
+        },
+    )
 
 
 class ExtractedFeatures(SQLModel, table=True):
@@ -183,3 +190,18 @@ class RedLines(SQLModel, table=True):
 
     # Relationship
     sentences: Sentences = Relationship(back_populates="redlines")
+
+
+class Embeddings(SQLModel, table=True):
+    __tablename__: typing.ClassVar[str] = "embeddings"
+    id: typing.Optional[int] = Field(default=None, primary_key=True)
+    sentence_id: typing.Optional[int] = Field(default=None, foreign_key="sentences.id")
+
+    model_language: str
+    model_name: str
+    vector: typing.List[float] = Field(
+        sa_column=Column(postgresql.ARRAY(Float())), nullable=False
+    )
+
+    # Relationship
+    sentences: Sentences = Relationship(back_populates="embeddings")

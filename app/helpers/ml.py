@@ -95,7 +95,7 @@ class ML:
         sentences: list[tuple[uuid, text]]
             list of pairs, each consisting of text and its identifier (so that
             we could 'place' exact phrase within some context (found by uuid);
-            it must follow this structure: [("Some text", "uuid1"), ("Another sentence", "uuid2"), ...]
+            it must follow this structure: [("Some text", "uuid1"), ...]
         batch_size: int
             the number of texts to buffer
         exclusive_search: bool
@@ -117,7 +117,7 @@ class ML:
         -----
         The idea behind _key_ noun phrase is that we only care about phrases
         that stem from the token which has nsubj dependency tag and whose
-        head token has VERB pos tag (as it's (arguably) more important than other phrases).
+        head token has VERB pos tag (as it's more important than other phrases).
         Thus, we limit the context -- from the full document to a limited
         subtree or even token's direct children -- within which we're going to
         match phrases according to our pos combinations.
