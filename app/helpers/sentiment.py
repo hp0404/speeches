@@ -40,7 +40,7 @@ class SentimentScorer:
             self._model_name
         )
 
-    def get_sentiment_scores(self, text: str) -> typing.List[float]:
+    def get_sentiment_scores(self, text: str) -> Prediction:
         inputs = self.tokenizer(
             text, return_tensors="pt", truncation=True, padding=True
         )
