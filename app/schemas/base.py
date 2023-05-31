@@ -82,3 +82,10 @@ class Embeddings(SQLModel):
     model_language: str
     model_name: str
     vector: typing.List[float]
+
+
+class Sentiment(SQLModel):
+    model_name: str
+    tokenizer_name: str
+    prediction: float
+    prediction_label: str

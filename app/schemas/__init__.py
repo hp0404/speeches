@@ -5,6 +5,7 @@ from app.schemas.base import (
     FakeJSON,
     RedLines,
     Sentence,
+    Sentiment,
     TextStatisticsJSON,
     Theme,
 )
@@ -15,6 +16,7 @@ __all__ = [
     "FakeJSON",
     "RedLines",
     "Sentence",
+    "Sentiment",
     "TextStatisticsJSON",
     "Theme",
 ]

@@ -6,6 +6,7 @@ from app.models.models import (
     Metadata,
     RedLines,
     Sentences,
+    Sentiment,
     TextStatistics,
     Themes,
 )
@@ -17,6 +18,7 @@ __all__ = [
     "Metadata",
     "RedLines",
     "Sentences",
+    "Sentiment",
     "TextStatistics",
     "Themes",
 ]
