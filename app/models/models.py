@@ -4,7 +4,7 @@ import datetime
 import typing
 
 from pydantic import HttpUrl
-from sqlalchemy import Column, Integer, Float
+from sqlalchemy import Column, Float, Integer
 from sqlalchemy.dialects import postgresql
 from sqlmodel import JSON, Field, Relationship, SQLModel
 

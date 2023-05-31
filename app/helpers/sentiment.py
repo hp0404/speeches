@@ -5,8 +5,8 @@ import typing
 import torch
 from numpy import argmax
 from transformers import (  # type: ignore
-    AutoTokenizer,
     AutoModelForSequenceClassification,
+    AutoTokenizer,
 )
 
 from app.schemas import Sentiment

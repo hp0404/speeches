@@ -4,9 +4,9 @@ from sqlmodel import Session
 
 from app.helpers.ml import create_pipeline, nlp
 from app.helpers.red_lines import RedLinesClassifier
+from app.helpers.sentiment import SentimentScorer
 from app.helpers.textstats import calculate_stats
 from app.helpers.transform import InvalidHTML, Transformer
-from app.helpers.sentiment import SentimentScorer
 from app.models import (
     Embeddings,
     Exports,
