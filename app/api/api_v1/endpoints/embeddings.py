@@ -3,8 +3,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session
 
-from app.helpers.ml import nlp
 from app.db.database import get_session
+from app.helpers.ml import nlp
 from app.models import Embeddings as database_model
 from app.schemas import Embeddings as response_model
 

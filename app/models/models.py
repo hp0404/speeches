@@ -4,7 +4,7 @@ import datetime
 import typing
 
 from pydantic import HttpUrl
-from sqlalchemy import Column, Integer, Float
+from sqlalchemy import Column, Float, Integer
 from sqlalchemy.dialects import postgresql
 from sqlmodel import JSON, Field, Relationship, SQLModel
 
@@ -110,6 +110,13 @@ class Sentences(SQLModel, table=True):
             "cascade": "all,delete,delete-orphan",
         },
     )
+    sentiments: "Sentiment" = Relationship(
+        back_populates="sentences",
+        sa_relationship_kwargs={
+            "uselist": False,
+            "cascade": "all,delete,delete-orphan",
+        },
+    )
 
 
 class ExtractedFeatures(SQLModel, table=True):
@@ -205,3 +212,20 @@ class Embeddings(SQLModel, table=True):
 
     # Relationship
     sentences: Sentences = Relationship(back_populates="embeddings")
+
+
+class Sentiment(SQLModel, table=True):
+    __tablename__: typing.ClassVar[str] = "sentiments"
+    id: typing.Optional[int] = Field(default=None, primary_key=True)
+    sentence_id: typing.Optional[int] = Field(default=None, foreign_key="sentences.id")
+
+    model_name: str
+    tokenizer_name: str
+
+    prediction: float
+    prediction_label: str
+
+    predicted_at: datetime.datetime = Field(default_factory=datetime.datetime.utcnow)
+
+    # Relationship
+    sentences: Sentences = Relationship(back_populates="sentiments")

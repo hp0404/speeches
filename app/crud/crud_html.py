@@ -4,6 +4,7 @@ from sqlmodel import Session
 
 from app.helpers.ml import create_pipeline, nlp
 from app.helpers.red_lines import RedLinesClassifier
+from app.helpers.sentiment import SentimentScorer
 from app.helpers.textstats import calculate_stats
 from app.helpers.transform import InvalidHTML, Transformer
 from app.models import (
@@ -13,12 +14,14 @@ from app.models import (
     Metadata,
     RedLines,
     Sentences,
+    Sentiment,
     TextStatistics,
     Themes,
 )
 
 KeyPhraseMatcher = create_pipeline()
 classifier = RedLinesClassifier()
+sentiment = SentimentScorer()
 
 
 class CRUDHTHML:
@@ -77,6 +80,15 @@ class CRUDHTHML:
                 model_language=nlp.meta["lang"],
                 model_name=nlp.meta["name"],
                 vector=vector,
+            )
+
+            sentiment_prediction = sentiment.predict(sent.text)
+            sentence.sentiments = Sentiment(
+                sentence_id=sent.sentence_id,
+                model_name=sentiment_prediction.model_name,
+                tokenizer_name=sentiment_prediction.tokenizer_name,
+                prediction=sentiment_prediction.prediction,
+                prediction_label=sentiment_prediction.prediction_label,
             )
 
             data_tuple = [(sentence.text, "discard")]
