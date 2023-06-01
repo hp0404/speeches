@@ -24,7 +24,7 @@ DEFAULT_SENTIMENT_LABELS = {
 
 
 class SentimentScorer:
-    """This class is used for sentiment scoring using pre-trained textcat model."""
+    """This class is used for sentiment scoring using pre-trained sentiment model."""
 
     def __init__(
         self,
