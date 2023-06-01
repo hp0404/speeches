@@ -50,10 +50,10 @@ class SentimentScorer:
 
     def predict(self, text: str) -> Sentiment:
         scores = self.get_sentiment_scores(text)
-        best_score = argmax(scores)
-        best_score_explained = self._sentiment_labels[int(best_score)]
+        best_score_idx = argmax(scores)
+        best_score_explained = self._sentiment_labels[int(best_score_idx)]
         return Sentiment(
-            prediction=best_score,
+            prediction=max(scores),
             prediction_label=best_score_explained,
             tokenizer_name=self._tokenizer_name,
             model_name=self._model_name,
