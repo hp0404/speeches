@@ -43,7 +43,7 @@ class RedLinesClassifier:
 
     def store(self, text: str) -> RedLines:
         """Given a text, return red line prediction with model's metadata."""
-        prediction = self.predict(text)["red line"]
+        prediction = self.predict(text)["threat"]
         return RedLines(
             model_language=self._lang,
             model_name=self._name,

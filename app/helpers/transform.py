@@ -103,6 +103,9 @@ class Transformer:
                 if dot is not None:
                     paragraph_speaker = possible_speaker
                     previous_speaker = paragraph_speaker
+            elif re.search(r"^Вопрос\:\s*", paragraph.text):
+                paragraph_speaker = "Unknown"
+                previous_speaker = paragraph_speaker
             if paragraph_speaker is None and previous_speaker is not None:
                 paragraph_speaker = previous_speaker
             doc = self.nlp(paragraph.text)
