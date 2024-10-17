@@ -1,15 +1,23 @@
 # -*- coding: utf-8 -*-
 import re
+import copy
 import typing
 
 import spacy
 from bs4 import BeautifulSoup  # type: ignore
+from bs4.element import Tag  # type: ignore
 
 from app.helpers.ml import nlp
 from app.schemas import Document, Sentence, Theme
 
 RE_SPEAKER = re.compile(
-    r"(^\w+[\s\.\-][А-ЯA-Z]\w+\:|^\w+[\s\.\-][А-ЯA-Z]\w*[\s\.\-][А-ЯA-Z]\w+\:|^\w+[\s\.\-][А-ЯA-Z]\w*[\s\.\-][А-ЯA-Z]\w*[\s\.\-][А-ЯA-Z]\w+\:|^\w+[\s\.\-][А-ЯA-Z]\w*[\s\.\-][А-ЯA-Z]\w*[\s\.\-][А-ЯA-Z]\w*[\s\.\-][А-ЯA-Z]\w+\:|^\«.{2,50}\»\:|^.{2,40}\«.{2,40}\»\:|^.{4,40}\(.+?\)\:)",
+    r"(^\w+[\s\.\-]+[А-ЯA-Z]\w+\s*\:|"
+    r"^\w+[\s\.\-]+[А-ЯA-Z]\w*[\s\.\-]+[А-ЯA-Z]\w+\s*\:|"
+    r"^\w+[\s\.\-]+[А-ЯA-Z]\w*[\s\.\-]+[А-ЯA-Z]\w*[\s\.\-]+[А-ЯA-Z]\w+\s*\:|"
+    r"^\w+[\s\.\-]+[А-ЯA-Z]\w*[\s\.\-]+[А-ЯA-Z]\w*[\s\.\-]+[А-ЯA-Z]\w*[\s\.\-]+[А-ЯA-Z]\w+\s*\:|"
+    r"^\«.{2,50}\»\:|"
+    r"^.{2,40}\«.{2,40}\»\:|"
+    r"^.{4,40}\(.+?\)\:)",
     flags=re.IGNORECASE,
 )
 
@@ -96,18 +104,23 @@ class Transformer:
         )
         for paragraph_id, paragraph in enumerate(paragraphs, start=1):
             paragraph_speaker: typing.Optional[str] = None
-            m = re.search(RE_SPEAKER, paragraph.text)
+            processed_paragraph_text = self.clean_html(paragraph)
+            m = re.search(RE_SPEAKER, processed_paragraph_text)
             if m is not None:
                 possible_speaker = m.group().strip()
                 dot = re.search(r"\.", possible_speaker)
                 if dot is not None:
                     paragraph_speaker = possible_speaker
                     previous_speaker = paragraph_speaker
-            elif re.search(r"^Вопрос\:\s*", paragraph.text):
+            elif re.search(
+                r"^Вопрос(?:\s*\(как(?:\s|\n)переведено\))?\s*:\s*",
+                processed_paragraph_text,
+            ):
                 paragraph_speaker = "Unknown"
                 previous_speaker = paragraph_speaker
             if paragraph_speaker is None and previous_speaker is not None:
                 paragraph_speaker = previous_speaker
+
             doc = self.nlp(paragraph.text)
             for sentence_id, sentence in enumerate(doc.sents, start=1):
                 processed_text = self.clean_text(sentence.text)
@@ -123,7 +136,11 @@ class Transformer:
                                 for t in sentence
                                 if t.is_alpha and not t.is_stop
                             ),
-                            "speaker": paragraph_speaker.strip(":")
+                            "speaker": re.sub(
+                                "\s+\(как переведено\)",
+                                "",
+                                paragraph_speaker.strip(":").strip(),
+                            )
                             if paragraph_speaker is not None
                             else None,
                         }
@@ -136,3 +153,12 @@ class Transformer:
         for pattern in (r"\*", r"\xa0", r"\n", r"^\w+\.\w+\:\s+", r"<…>"):
             cleaned_text = re.sub(pattern, " ", cleaned_text)
         return cleaned_text.strip()
+
+    @staticmethod
+    def clean_html(tag: Tag) -> str:
+        tag_copy = copy.copy(tag)
+        for tooltip in tag_copy.find_all("span", class_="tooltip__text"):
+            tooltip.decompose()
+        for unwanted in tag_copy.find_all(["a"]):
+            unwanted.unwrap()
+        return tag_copy.get_text().strip()
